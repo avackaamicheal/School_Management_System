@@ -8,11 +8,11 @@
 
         {{-- Dynamic Home Link based on Role --}}
         <li class="nav-item d-none d-sm-inline-block">
-            @if(auth()->user()?->hasRole('SuperAdmin'))
+            @if (auth()->user()?->hasRole('SuperAdmin'))
                 <a href="{{ route('superadmin.dashboard') }}" class="nav-link">SuperAdmin Dashboard</a>
             @elseif(auth()->user()?->hasRole('SchoolAdmin'))
                 <a href="{{ route('schooladmin.dashboard') }}" class="nav-link">School Dashboard</a>
-            {{-- @elseif(auth()->user()->role === 'teacher')
+                {{-- @elseif(auth()->user()->role === 'teacher')
                 <a href="{{ route('teacher.dashboard') }}" class="nav-link">My Classroom</a>
             @else
                 <a href="{{ route('student.dashboard') }}" class="nav-link">My Learning</a> --}}
@@ -23,10 +23,10 @@
     <ul class="navbar-nav ml-auto">
 
         {{-- Only show this dropdown if the user is the SuperAdmin --}}
-        @if(auth()->user()?->hasRole('SuperAdmin'))
+        @if (auth()->user()?->hasRole('SuperAdmin'))
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
-                    @if(session('active_school'))
+                    @if (session('active_school'))
                         <i class="fas fa-school text-warning"></i>
                         <span class="font-weight-bold text-dark">
                             {{ \App\Models\School::find(session('active_school'))->name ?? 'School Selected' }}
@@ -40,7 +40,7 @@
                     <div class="dropdown-divider"></div>
 
                     {{-- Option: Go Global --}}
-                     <form action="{{ route('school.context') }}" method="POST">
+                    <form action="{{ route('school.context') }}" method="POST">
                         @csrf
                         <input type="hidden" name="school_id" value="">
                         <button type="submit" class="dropdown-item">
@@ -48,8 +48,8 @@
                         </button>
                     </form>
 
-                     {{-- Option: List Schools (Limit to 5 for UI, add 'View All' link if needed) --}}
-                    @foreach(\App\Models\School::limit(5)->get() as $school)
+                    {{-- Option: List Schools (Limit to 5 for UI, add 'View All' link if needed) --}}
+                    @foreach (\App\Models\School::limit(5)->get() as $school)
                         <div class="dropdown-divider"></div>
                         <form action="{{ route('school.context') }}" method="POST">
                             @csrf
@@ -64,6 +64,30 @@
         @endif
 
         @auth
+            @if (session('active_school'))
+                @php
+                    // Fetch the active timeline for the current school
+                    $activeSession = \App\Models\AcademicSession::where('school_id', session('active_school'))
+                        ->where('is_active', true)
+                        ->first();
+                    $activeTerm = \App\Models\Term::where('school_id', session('active_school'))
+                        ->where('is_active', true)
+                        ->first();
+                @endphp
+
+                <li class="nav-item d-none d-md-flex align-items-center mr-3">
+                    @if ($activeSession && $activeTerm)
+                        <span class="badge badge-success px-3 py-2 text-sm elevation-1" style="border-radius: 20px;">
+                            <i class="fas fa-calendar-alt mr-1"></i>
+                            {{ $activeSession->name }} &nbsp;|&nbsp; {{ $activeTerm->name }}
+                        </span>
+                    @else
+                        <span class="badge badge-danger px-3 py-2 text-sm elevation-1" style="border-radius: 20px;">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> No Active Term Setup
+                        </span>
+                    @endif
+                </li>
+            @endif
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
                     <i class="far fa-bell"></i>
@@ -74,18 +98,18 @@
                     <div class="dropdown-divider"></div>
 
                     {{-- Example: Teacher Notification --}}
-                    @if(auth()->user()?->hasRole('Teacher'))
+                    @if (auth()->user()?->hasRole('Teacher'))
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-file-alt mr-2"></i> 2 Assignments Submitted
                             <span class="float-right text-muted text-sm">3 mins</span>
                         </a>
-                    {{-- Example: Parent/Student Notification --}}
+                        {{-- Example: Parent/Student Notification --}}
                     @elseif(auth()->user()?->hasRole('Student'))
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-chalkboard mr-2"></i> Homework Due: Math
                             <span class="float-right text-muted text-sm">2 hours</span>
                         </a>
-                    {{-- Default --}}
+                        {{-- Default --}}
                     @else
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-envelope mr-2"></i> System Update
@@ -103,19 +127,21 @@
             <li class="nav-item dropdown user-menu">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
                     {{-- User Image --}}
-                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="user-image img-circle elevation-2" alt="User Image">
+                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="user-image img-circle elevation-2"
+                        alt="User Image">
                     {{-- User Name --}}
                     <span class="d-none d-md-inline">{{ auth()->user()?->name }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <li class="user-header bg-primary">
-                        <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+                        <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
+                            alt="User Image">
                         <p>
                             {{ auth()->user()?->name }}
                             {{-- Display Role Nicely (e.g., 'school_admin' -> 'School Administrator') --}}
                             <small>{{ ucwords(str_replace('_', ' ', auth()->user()?->role)) }}</small>
 
-                            @if(session('active_school'))
+                            @if (session('active_school'))
                                 <small class="d-block mt-1">
                                     {{ \App\Models\School::find(session('active_school'))->name }}
                                 </small>
@@ -164,7 +190,8 @@
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
-                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
+                        alt="User Image">
                 </div>
                 <div class="info">
                     <a href="" class="d-block">{{ auth()->user()->name }}</a>
@@ -178,7 +205,7 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                     data-accordion="false">
                     <!-- Add icons to the links using the .nav-icon class
-                   with font-awesome or any other icon font library -->
+                       with font-awesome or any other icon font library -->
                     <li class="nav-item menu-open">
                         @if (auth()->user()?->hasRole('SuperAdmin'))
                             <a href="{{ route('superadmin.dashboard') }}" class="nav-link active">
@@ -187,7 +214,6 @@
                                     Dashboard
                                 </p>
                             </a>
-
                         @elseif(auth()->user()?->hasRole('SchoolAdmin'))
                             <a href="{{ route('schooladmin.dashboard') }}" class="nav-link active">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -195,7 +221,6 @@
                                     Dashboard
                                 </p>
                             </a>
-
                         @endif
                     </li>
 
@@ -210,7 +235,7 @@
                         </li>
                     @endif
 
-                    @if(auth()->user()->hasRole('SchoolAdmin'))
+                    @if (auth()->user()->hasRole('SchoolAdmin'))
                         <li class="nav-header">ACADEMICS</li>
 
                         <li class="nav-item">

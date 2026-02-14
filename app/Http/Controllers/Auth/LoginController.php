@@ -32,7 +32,7 @@ class LoginController extends Controller
      *
      * @return string
      */
-    public function redirectTo($user)
+    public function redirectTo()
     {
         // 1. Get the currently authenticated user
         $user = auth()->user();
