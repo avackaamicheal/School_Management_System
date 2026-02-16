@@ -3,6 +3,7 @@
 use App\Http\Controllers\Academic\AcademicSettingsController;
 use App\Http\Controllers\Academic\ClassroomAssignmentController;
 use App\Http\Controllers\Academic\StudentAdmissionController;
+use App\Http\Controllers\Academic\TimetableController;
 use App\Http\Controllers\Bursar\BursarController;
 use App\Http\Controllers\ClassLevel\ClassLevelController;
 use App\Http\Controllers\Parent\ParentController;
@@ -81,7 +82,16 @@ Route::middleware(['auth', 'role:SchoolAdmin', 'tenant'])
         Route::get('students/template', [StudentAdmissionController::class, 'downloadTemplate'])->name('students.template');
         Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'destroy');
         Route::resource('classassignment', ClassroomAssignmentController::class)->only('index', 'create', 'destroy');
-        Route::post('/academic-sessions/{academicSession}/activate', [AcademicSettingsController::class, 'activateSession'])->name('academic-sessions.activate');
-        Route::post('/terms/{term}/activate', [AcademicSettingsController::class, 'activateTerm'])->name('terms.activate');
+        // Academic Settings
+        Route::get('/academic-settings', [AcademicSettingsController::class, 'index'])->name('academic-settings.index');
 
+        Route::post('/academic-sessions', [AcademicSettingsController::class, 'storeSession'])->name('academic-sessions.store');
+        Route::post('/academic-sessions/{academicSession}/activate', [AcademicSettingsController::class, 'activateSession'])->name('academic-sessions.activate');
+
+        Route::post('/terms', [AcademicSettingsController::class, 'storeTerm'])->name('terms.store');
+        Route::post('/terms/{term}/activate', [AcademicSettingsController::class, 'activateTerm'])->name('terms.activate');
+        // Timetable Routes
+        Route::get('/timetable', [TimetableController::class, 'index'])->name('timetable.index');
+        Route::post('/timetable', [TimetableController::class, 'store'])->name('timetable.store');
+        Route::delete('/timetable/{timetable}', [TimetableController::class, 'destroy'])->name('timetable.destroy');
     });

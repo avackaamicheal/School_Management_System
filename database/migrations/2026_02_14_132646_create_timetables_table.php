@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,6 +12,20 @@ return new class extends Migration
     {
         Schema::create('timetables', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('school_id')->constrained()->cascadeOnDelete();
+
+            // Link to the active term so schedules reset each term
+            $table->foreignId('term_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('section_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
+
+            // Ensure this maps to the users table
+            $table->foreignId('teacher_id')->constrained('users')->cascadeOnDelete();
+
+            $table->string('day_of_week'); // e.g., Monday, Tuesday
+            $table->time('start_time');
+            $table->time('end_time');
             $table->timestamps();
         });
     }
