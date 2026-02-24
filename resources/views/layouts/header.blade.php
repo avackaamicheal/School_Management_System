@@ -270,8 +270,14 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('grades.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-graduation-cap"></i>
+                                <p>Grade</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('assessments.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-alt"></i>
+                                <i class="nav-icon fas fa-book-open"></i>
                                 <p>Asessment</p>
                             </a>
                         </li>

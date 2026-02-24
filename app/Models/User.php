@@ -91,7 +91,16 @@ class User extends Authenticatable
     }
 
     public function school()
-{
-    return $this->belongsTo(School::class);
-}
+    {
+        return $this->belongsTo(School::class);
+    }
+
+    /**
+     * Get all grade records for a student.
+     * This is the engine that will power our Report Cards.
+     */
+    public function grades()
+    {
+        return $this->hasMany(GradeRecord::class, 'student_id');
+    }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Academic\AcademicSettingsController;
 use App\Http\Controllers\Academic\AssessmentWeightController;
 use App\Http\Controllers\Academic\AttendanceController;
 use App\Http\Controllers\Academic\ClassroomAssignmentController;
+use App\Http\Controllers\Academic\GradeEntryController;
 use App\Http\Controllers\Academic\StudentAdmissionController;
 use App\Http\Controllers\Academic\TimetableController;
 use App\Http\Controllers\Bursar\BursarController;
@@ -97,5 +98,8 @@ Route::middleware(['auth', 'active', 'role:SchoolAdmin'])
         // Assessment Settings
         Route::get('/assessments', [AssessmentWeightController::class, 'index'])->name('assessments.index');
         Route::post('/assessments', [AssessmentWeightController::class, 'store'])->name('assessments.store');
+        // Grade Entry
+        Route::get('/grades', [GradeEntryController::class, 'index'])->name('grades.index');
+        Route::post('/grades', [GradeEntryController::class, 'store'])->name('grades.store');
     });
 
