@@ -282,6 +282,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('reports.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-book-open"></i>
+                                <p>Report Cards</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('academic-settings.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-calendar-alt"></i>
                                 <p>Academic Settings</p>

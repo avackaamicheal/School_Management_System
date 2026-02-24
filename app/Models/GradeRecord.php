@@ -31,4 +31,19 @@ class GradeRecord extends Model
         return $this->belongsTo(User::class, 'student_id');
     }
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+    public function term()
+    {
+        return $this->belongsTo(Term::class);
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
+
 }

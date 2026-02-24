@@ -5,6 +5,7 @@ use App\Http\Controllers\Academic\AssessmentWeightController;
 use App\Http\Controllers\Academic\AttendanceController;
 use App\Http\Controllers\Academic\ClassroomAssignmentController;
 use App\Http\Controllers\Academic\GradeEntryController;
+use App\Http\Controllers\Academic\ReportCardController;
 use App\Http\Controllers\Academic\StudentAdmissionController;
 use App\Http\Controllers\Academic\TimetableController;
 use App\Http\Controllers\Bursar\BursarController;
@@ -101,5 +102,9 @@ Route::middleware(['auth', 'active', 'role:SchoolAdmin'])
         // Grade Entry
         Route::get('/grades', [GradeEntryController::class, 'index'])->name('grades.index');
         Route::post('/grades', [GradeEntryController::class, 'store'])->name('grades.store');
+        // Report Cards
+        Route::get('/reports', [ReportCardController::class, 'index'])->name('reports.index');
+        Route::get('/reports/student/{id}', [ReportCardController::class, 'downloadSingle'])->name('reports.single');
+        Route::get('/reports/batch/{section_id}', [ReportCardController::class, 'downloadBatch'])->name('reports.batch');
     });
 
