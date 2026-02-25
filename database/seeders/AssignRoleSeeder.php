@@ -5,8 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use spatie\Permission\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class AssignRoleSeeder extends Seeder
 {
@@ -23,7 +21,7 @@ class AssignRoleSeeder extends Seeder
             'password'=> Hash::make('Superadmin123')
         ]);
 
-        $superAdmin ->assignRole('Superadmin');
+        $superAdmin ->assignRole('SuperAdmin');
 
 
         $schoolAdmin = User::create([
@@ -32,7 +30,7 @@ class AssignRoleSeeder extends Seeder
             'password'=> Hash::make('Schooladmin123')
         ]);
 
-        $schoolAdmin ->assignRole('Schooladmin');
+        $schoolAdmin ->assignRole('SchoolAdmin');
 
 
         $teacher = User::create([
@@ -50,7 +48,7 @@ class AssignRoleSeeder extends Seeder
             'password'=> Hash::make('Student123')
         ]);
 
-        $student ->assignRole('student');
+        $student ->assignRole('Student');
 
 
         $parent = User::create([
@@ -59,7 +57,7 @@ class AssignRoleSeeder extends Seeder
             'password'=> Hash::make('Parent123')
         ]);
 
-        $parent ->assignRole('parent');
+        $parent ->assignRole('Parent');
 
 
         $bursar = User::create([
@@ -68,6 +66,6 @@ class AssignRoleSeeder extends Seeder
             'password'=> Hash::make('Bursar123')
         ]);
 
-        $bursar ->assignRole('bursar');
+        $bursar ->assignRole('Bursar');
     }
 }
