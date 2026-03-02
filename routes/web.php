@@ -10,6 +10,7 @@ use App\Http\Controllers\Academic\StudentAdmissionController;
 use App\Http\Controllers\Academic\TimetableController;
 use App\Http\Controllers\Bursar\BursarController;
 use App\Http\Controllers\ClassLevel\ClassLevelController;
+use App\Http\Controllers\Finance\FeeController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
@@ -106,5 +107,9 @@ Route::middleware(['auth', 'active', 'role:SchoolAdmin'])
         Route::get('/reports', [ReportCardController::class, 'index'])->name('reports.index');
         Route::get('/reports/student/{id}', [ReportCardController::class, 'downloadSingle'])->name('reports.single');
         Route::get('/reports/batch/{section_id}', [ReportCardController::class, 'downloadBatch'])->name('reports.batch');
+        // Finance & Fees
+        Route::get('/fees', [FeeController::class, 'index'])->name('fees.index');
+        Route::post('/fees', [FeeController::class, 'store'])->name('fees.store');
+        Route::post('/invoices/generate', [FeeController::class, 'generateInvoices'])->name('invoices.generate');
     });
 

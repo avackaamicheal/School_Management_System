@@ -329,6 +329,17 @@
                                 </li>
                             </ul>
                         </li>
+                         <li class="nav-header">FINANCE</li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('fees.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                                <p>
+                                    Fees
+                                    <span class="badge badge-info right">12</span>
+                                </p>
+                            </a>
+                        </li>
 
                         <li class="nav-header">SETTINGS</li>
                         <li class="nav-item">

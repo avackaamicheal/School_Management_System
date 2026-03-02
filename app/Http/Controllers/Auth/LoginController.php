@@ -23,9 +23,9 @@ class LoginController extends Controller
 
     /**
      * Where to redirect users after login.
-    *
-    * @var string
-    */
+     *
+     * @var string
+     */
     // protected $redirectTo = '/login';
     /**
      * Get the post login redirect path.
@@ -44,9 +44,17 @@ class LoginController extends Controller
         }
 
         if ($user->hasRole('SchoolAdmin')) {
-            return redirect()->route('schooladmin.dashboard', [
-            'school' => $user->school->slug
-        ]);
+            
+            // 1. Safely check if the user actually has a school attached
+            if ($user->school && $user->school->slug) {
+                return redirect()->route('schooladmin.dashboard', [
+                    'school' => trim($user->school->slug)
+                ]);
+            }
+
+            // 2. Graceful fallback if the database data is missing/corrupted
+            Auth::logout();
+            return redirect()->route('login')->with('error', 'Configuration Error: Your account is not assigned to a valid school. Please contact the SuperAdmin.');
         }
 
         if ($user->hasRole('Teacher')) {
@@ -71,7 +79,7 @@ class LoginController extends Controller
      * Create a new controller instance.
      *
      * @return void
-    */
+     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
