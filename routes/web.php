@@ -11,6 +11,7 @@ use App\Http\Controllers\Academic\TimetableController;
 use App\Http\Controllers\Bursar\BursarController;
 use App\Http\Controllers\ClassLevel\ClassLevelController;
 use App\Http\Controllers\Finance\FeeController;
+use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
@@ -111,5 +112,9 @@ Route::middleware(['auth', 'active', 'role:SchoolAdmin'])
         Route::get('/fees', [FeeController::class, 'index'])->name('fees.index');
         Route::post('/fees', [FeeController::class, 'store'])->name('fees.store');
         Route::post('/invoices/generate', [FeeController::class, 'generateInvoices'])->name('invoices.generate');
+        // Invoices & Payments
+        Route::get('/invoices', [PaymentController::class, 'index'])->name('invoices.index');
+        Route::post('/invoices/{invoice}/pay', [PaymentController::class, 'store'])->name('payments.store');
+        Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
     });
 

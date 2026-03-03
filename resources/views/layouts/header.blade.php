@@ -277,13 +277,13 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('assessments.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-book-open"></i>
+                                <i class="nav-icon fas fa-clipboard-list"></i>
                                 <p>Asessment</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('reports.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-book-open"></i>
+                                <i class="nav-icon fas fa-file-contract"></i>
                                 <p>Report Cards</p>
                             </a>
                         </li>
@@ -333,9 +333,18 @@
 
                         <li class="nav-item">
                             <a href="{{ route('fees.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                                <i class="nav-icon fas fa-coins"></i>
                                 <p>
                                     Fees
+                                    <span class="badge badge-info right">12</span>
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('invoices.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <p>
+                                    Invoice
                                     <span class="badge badge-info right">12</span>
                                 </p>
                             </a>
