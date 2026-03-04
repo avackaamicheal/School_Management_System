@@ -356,6 +356,16 @@
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-header">COMMUNICATION</li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('announcements.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-bullhorn"></i>
+                                <p>
+                                    Announcements
+                                </p>
+                            </a>
+                        </li>
 
                         <li class="nav-header">SETTINGS</li>
                         <li class="nav-item">

@@ -10,6 +10,7 @@ use App\Http\Controllers\Academic\StudentAdmissionController;
 use App\Http\Controllers\Academic\TimetableController;
 use App\Http\Controllers\Bursar\BursarController;
 use App\Http\Controllers\ClassLevel\ClassLevelController;
+use App\Http\Controllers\Communication\AnnouncementController;
 use App\Http\Controllers\Finance\FeeController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\Finance\ReportController;
@@ -120,5 +121,9 @@ Route::middleware(['auth', 'active', 'role:SchoolAdmin'])
         // Finance Reports
         Route::get('/finance/reports', [ReportController::class, 'index'])->name('finance.reports.index');
         Route::get('/finance/reports/export', [ReportController::class, 'export'])->name('finance.reports.export');
+        // Announcements
+        Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
+        Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
     });
 
