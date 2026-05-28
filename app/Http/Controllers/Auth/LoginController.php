@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use illuminate\support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -34,22 +34,40 @@ class LoginController extends Controller
      */
     public function redirectTo()
     {
-        // 1. Get the currently authenticated user
-       $user = Auth::user();
+        $user = Auth::user();
 
+        // SuperAdmin first — no school needed
         if ($user->hasRole('SuperAdmin')) {
             return route('superadmin.dashboard');
         }
 
-        $slug = trim($user->school->slug ?? '');
+        // All other roles need a school
+        $school = $user->school;
+        $slug = trim($school->slug ?? '');
 
+        if ($user->hasRole('SchoolAdmin')) {
+            // Manually deactivated
+            if ($school?->approval_status === 'rejected') {
+                return route('schooladmin.rejected');
+            }
+
+            // No active subscription
+            if (!$school->hasActiveSubscription()) {
+                return route('subscription.index');
+            }
+
+            if (!$slug) {
+                Auth::logout();
+                return route('login');
+            }
+
+            return route('schooladmin.dashboard', ['school' => $slug]);
+        }
+
+        // Remaining roles need a valid slug
         if (!$slug) {
             Auth::logout();
             return route('login');
-        }
-
-        if ($user->hasRole('SchoolAdmin')) {
-            return route('schooladmin.dashboard', ['school' => $slug]);
         }
 
         if ($user->hasRole('Teacher')) {

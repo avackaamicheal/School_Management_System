@@ -39,6 +39,33 @@
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
+    @auth
+        @if (auth()->user()->hasRole('SchoolAdmin'))
+            @php
+                $sub = auth()->user()->school?->activeSubscription()->first();
+            @endphp
+            @if ($sub && $sub->daysUntilExpiry() <= 7 && $sub->daysUntilExpiry() > 0)
+                <div class="alert alert-warning text-center mb-0 py-2" style="border-radius: 0;">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    Your subscription expires in <strong>{{ $sub->daysUntilExpiry() }} days</strong>
+                    on {{ $sub->expires_at->format('M d, Y') }}.
+                    <a href="{{ route('subscription.index') }}" class="font-weight-bold ml-2">
+                        Renew Now
+                    </a>
+                </div>
+            @endif
+
+            @if ($sub && $sub->isInGracePeriod())
+                <div class="alert alert-danger text-center mb-0 py-2" style="border-radius: 0;">
+                    <i class="fas fa-lock mr-1"></i>
+                    Your subscription has expired. You are in a grace period.
+                    <a href="{{ route('subscription.index') }}" class="font-weight-bold text-white ml-2">
+                        Renew Now to avoid losing access
+                    </a>
+                </div>
+            @endif
+        @endif
+    @endauth
     <div class="wrapper">
 
         <!-- Preloader -->

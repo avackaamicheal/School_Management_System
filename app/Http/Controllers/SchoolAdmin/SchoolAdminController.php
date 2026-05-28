@@ -8,11 +8,10 @@ use App\Http\Requests\UpdateSchoolAdminRequest;
 use App\Models\Attendance;
 use App\Models\ClassLevel;
 use App\Models\School;
-use App\Models\StudentProfile;
 use App\Models\Subject;
-use App\Models\TeacherProfile;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class SchoolAdminController extends Controller
@@ -142,7 +141,7 @@ class SchoolAdminController extends Controller
     public function destroy(User $admin)
     {
         // Prevent deleting yourself
-        if ($admin->id === auth()->id()) {
+        if ($admin->getKey() === Auth::id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
 
@@ -151,4 +150,15 @@ class SchoolAdminController extends Controller
         return back()->with('success', 'School Admin removed successfully!');
     }
 
+    public function pending()
+    {
+        $school = Auth::user()->school;
+        return view('schooladmin.pending', compact('school'));
+    }
+
+    public function rejected()
+    {
+        $school = Auth::user()->school;
+        return view('schooladmin.rejected', compact('school'));
+    }
 }

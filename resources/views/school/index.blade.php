@@ -42,7 +42,9 @@
                                             <th>Address</th>
                                             <th>Principal Name</th>
                                             <th>Phone Number</th>
-                                            <th>Actions</th>
+                                            <th>Status</th>
+                                            <th>Subscription</th>
+                                            <th class="text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -54,17 +56,68 @@
                                                 <td>{{ $school->address }}</td>
                                                 <td>{{ $school->principal_name }}</td>
                                                 <td>{{ $school->phone_number }}</td>
-                                                <td>
-                                                    <a href=""><button class="btn btn-primary btn-sm btn-rounded"><span class="fas fa-eye"></span></button></a>
-                                                    <a href="{{ route('school.edit', $school->id) }}"><button class="btn btn-primary btn-sm btn-rounded"><span class="fas fa-pen"></span></button></a>
-                                                    <form action="{{ route('school.destroy', $school->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                <td class="align-middle">
+                                                    @if ($school->approval_status === 'rejected')
+                                                        <span class="badge badge-danger">Deactivated</span>
+                                                    @elseif($school->is_active && $school->hasActiveSubscription())
+                                                        <span class="badge badge-success">Active</span>
+                                                    @elseif($school->approval_status === 'pending')
+                                                        <span class="badge badge-warning">Awaiting Payment</span>
+                                                    @else
+                                                        <span class="badge badge-secondary">Inactive</span>
+                                                    @endif
+                                                </td>
+                                                {{-- Subscription column --}}
+                                                <td class="align-middle">
+                                                    @php $sub = $school->activeSubscription()->with('plan')->first(); @endphp
+                                                    @if ($sub && $sub->isActive())
+                                                        <span class="badge badge-success p-2">
+                                                            {{ $sub->plan->name }} |
+                                                            Expires {{ $sub->expires_at->format('M d, Y') }}
+                                                        </span>
+                                                    @elseif($sub && $sub->isInGracePeriod())
+                                                        <span class="badge badge-warning p-2">
+                                                            Grace Period —
+                                                            {{ 7 - (int) $sub->expires_at->diffInDays(now()) }} days left
+                                                        </span>
+                                                    @else
+                                                        <span class="badge badge-danger">No Subscription</span>
+                                                    @endif
+                                                </td>
 
-                                                        <button type="submit"
-                                                                class="btn btn-danger btn-sm btn-rounded"
-                                                                onclick="return confirm('Are you sure you want to delete this school?');">
-                                                            <span class="fas fa-trash"></span>
+                                                {{-- Actions column --}}
+                                                <td class="align-middle text-right">
+                                                    <a href="{{ route('school.edit', $school->slug) }}"
+                                                        class="btn btn-sm btn-warning">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
+
+                                                    @if ($school->approval_status !== 'rejected')
+                                                        <form action="{{ route('school.deactivate', $school->slug) }}"
+                                                            method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                                onclick="return confirm('Deactivate {{ $school->name }}?')">
+                                                                <i class="fas fa-ban"></i> Deactivate
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <form action="{{ route('school.reactivate', $school->slug) }}"
+                                                            method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-sm btn-success"
+                                                                onclick="return confirm('Reactivate {{ $school->name }}?')">
+                                                                <i class="fas fa-check"></i> Reactivate
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    <form action="{{ route('school.destroy', $school->slug) }}"
+                                                        method="POST" class="d-inline">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            onclick="return confirm('Permanently delete {{ $school->name }}?')">
+                                                            <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
                                                 </td>
@@ -85,11 +138,11 @@
                     <!-- /.col -->
                 </div>
 
-                </div>
+            </div>
 
-            </div><!-- /.container-fluid -->
-        </section>
-        <!-- /.content -->
+    </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 @endsection

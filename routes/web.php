@@ -8,6 +8,7 @@ use App\Http\Controllers\Academic\GradeEntryController;
 use App\Http\Controllers\Academic\ReportCardController;
 use App\Http\Controllers\Academic\StudentAdmissionController;
 use App\Http\Controllers\Academic\TimetableController;
+use App\Http\Controllers\Auth\SchoolRegistrationController;
 use App\Http\Controllers\Bursar\BursarController;
 use App\Http\Controllers\ClassLevel\ClassLevelController;
 use App\Http\Controllers\Communication\AnnouncementController;
@@ -21,12 +22,12 @@ use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
 use App\Http\Controllers\SchoolContextController;
 use App\Http\Controllers\Section\SectionController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
-//use App\Http\Controllers\Student\StudentController;
 use App\Http\Controllers\Subject\SubjectController;
+use App\Http\Controllers\Subscription\SubscriptionController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboard;
-use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Teacher\StudentController;
+use App\Http\Controllers\Teacher\TeacherController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,8 @@ Auth::routes();
 Route::get('/', function () {
     return view('auth.login');
 });
+Route::get('/register/school', [SchoolRegistrationController::class, 'showForm'])->name('school.register');
+Route::post('/register/school', [SchoolRegistrationController::class, 'store'])->name('school.register.store');
 
 // SuperAdmin routes (no school prefix)
 Route::middleware(['auth', 'role:SuperAdmin', 'tenant'])
@@ -43,6 +46,8 @@ Route::middleware(['auth', 'role:SuperAdmin', 'tenant'])
         Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
         Route::resource('school', SchoolController::class);
         Route::post('/school-context', SchoolContextController::class)->name('school.context');
+        Route::post('/school/{school}/approve', [SchoolController::class, 'approve'])->name('school.approve');
+        Route::post('/school/{school}/reject', [SchoolController::class, 'reject'])->name('school.reject');
         // School Admins
         Route::get('/admins', [SchoolAdminController::class, 'index'])->name('superadmin.admins.index');
         Route::get('/admins/create', [SchoolAdminController::class, 'create'])->name('superadmin.admins.create');
@@ -50,7 +55,27 @@ Route::middleware(['auth', 'role:SuperAdmin', 'tenant'])
         Route::get('/admins/{admin}/edit', [SchoolAdminController::class, 'edit'])->name('superadmin.admins.edit');
         Route::put('/admins/{admin}', [SchoolAdminController::class, 'update'])->name('superadmin.admins.update');
         Route::delete('/admins/{admin}', [SchoolAdminController::class, 'destroy'])->name('superadmin.admins.destroy');
+        Route::post('/school/{school}/deactivate', [SchoolController::class, 'deactivate'])->name('school.deactivate');
+        Route::post('/school/{school}/reactivate', [SchoolController::class, 'reactivate'])->name('school.reactivate');
     });
+
+
+Route::middleware(['auth', 'role:SchoolAdmin'])
+    ->group(function () {
+        Route::get('/school/pending', [SchoolAdminController::class, 'pending'])
+            ->name('schooladmin.pending');
+        Route::get('/school/rejected', [SchoolAdminController::class, 'rejected'])
+            ->name('schooladmin.rejected');
+
+        Route::prefix('subscription')
+            ->group(function () {
+                Route::get('/', [SubscriptionController::class, 'index'])->name('subscription.index');
+                Route::post('/initiate', [SubscriptionController::class, 'initiate'])->name('subscription.initiate');
+                Route::get('/callback', [SubscriptionController::class, 'callback'])->name('subscription.callback');
+            });
+    });
+
+
 
 Route::middleware(['auth', 'active'])
     ->prefix('{school}')

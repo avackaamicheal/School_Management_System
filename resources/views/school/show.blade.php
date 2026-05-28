@@ -20,7 +20,7 @@
                 <div class="alert alert-danger">{{ $errors->first() }}</div>
             @endif
 
-            <form action="{{ route('school.profile.update') }}" method="POST">
+            <form action="{{ route('school.profile.update', $school->slug) }}" method="POST">
                 @csrf @method('PUT')
 
                 <div class="row">

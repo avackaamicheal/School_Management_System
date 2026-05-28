@@ -42,7 +42,7 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form method="POST" action="{{ route('school.update', $school->id) }}">
+              <form method="POST" action="{{ route('school.update', $school->slug) }}">
                 @csrf
                 @method('PATCH')
                 <div class="card-body">

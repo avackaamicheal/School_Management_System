@@ -26,6 +26,7 @@ class SetTenantSchool
         $school = $schoolSlug instanceof \App\Models\School
             ? $schoolSlug
             : \App\Models\School::where('slug', $schoolSlug)->firstOrFail();
+            
         session(['active_school' => $school->id]);
         URL::defaults(['school' => $school->slug]);
 
