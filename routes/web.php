@@ -20,6 +20,7 @@ use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
 use App\Http\Controllers\SchoolContextController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Section\SectionController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboard;
 use App\Http\Controllers\Subject\SubjectController;
@@ -127,6 +128,9 @@ Route::middleware(['auth', 'active'])
             Route::put('/school-profile', [SchoolController::class, 'update'])->name('school.profile.update');
             // Bursar
             Route::get('/bursar/dashboard', [BursarController::class, 'index'])->name('bursar.dashboard');
+            // Search - accessible by SchoolAdmin
+            Route::get('/search', [SearchController::class, 'index'])->name('search.index');
+            Route::get('/search/live', [SearchController::class, 'live'])->name('search.live');
         });
 
         // -----------------------------------------------

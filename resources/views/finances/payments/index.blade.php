@@ -17,7 +17,13 @@
                     <div class="alert alert-danger">{{ $errors->first() }}</div>
                 @endif
 
+
                 <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Invoice List</h3>
+                        <x-search-filter :route="route('invoices.index')" placeholder="Search by invoice number or student name..."
+                            :show-status="true" :status-options="['PAID' => 'Paid', 'UNPAID' => 'Unpaid', 'PARTIAL' => 'Partial']" />
+                    </div>
                     <div class="card-body table-responsive p-0">
                         <table class="table table-hover table-striped">
                             <thead class="bg-light">

@@ -21,7 +21,17 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">List of Classes</h3>
+                        <h3 class="card-title">
+                            All Classes
+                            @if (request('search'))
+                                <span class="badge badge-info ml-2">{{ $classLevels->total() }} found</span>
+                            @else
+                                <span class="badge badge-secondary ml-2">{{ $classLevels->total() }} total</span>
+                            @endif
+                        </h3>
+
+                        <x-search-filter :route="route('classLevel.index')" placeholder="Search class name..." />
+
                     </div>
 
                     <div class="card-body p-0">
@@ -36,7 +46,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($classLevels as $class)
+                                @forelse ($classLevels as $class)
                                     <tr>
                                         <td>
                                             <strong>{{ $class->name }}</strong>
@@ -68,14 +78,28 @@
                                                 onclick="handleDelete({{ $class->id }})">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
-                                            <form id="delete-form-{{ $class->id }}" action="{{ route('classLevel.destroy', $class->id) }}" method="POST"
+                                            <form id="delete-form-{{ $class->id }}"
+                                                action="{{ route('classLevel.destroy', $class->id) }}" method="POST"
                                                 style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            @if(request('search'))
+                                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                                No class found matching "{{ request('search') }}".
+                                                <a href="{{ route('classLevel.index') }}">Clear search</a>
+                                            @else
+                                                <i class="fas fa-puzzle-piece fa-2x mb-2"></i><br>
+                                                No classes added yet.
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -151,7 +175,7 @@
             $('#modal-class').modal('show');
         }
 
-       window.handleFormSubmit = async function(e) {
+        window.handleFormSubmit = async function(e) {
             e.preventDefault();
             let form = e.target;
             let formData = new FormData(form);

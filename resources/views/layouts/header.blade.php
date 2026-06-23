@@ -23,6 +23,30 @@
                 <a href="{{ route('parent.dashboard') }}" class="nav-link">Family Portal</a>
             @endrole
         </li>
+
+        {{-- Add inside the navbar ul.navbar-nav --}}
+        @hasanyrole('SchoolAdmin')
+            <li class="nav-item">
+                <div class="navbar-search-block" style="display: block; position: relative;">
+                    <div class="input-group input-group-sm">
+                        <input type="text" id="globalSearchInput" class="form-control"
+                            placeholder="Search students, teachers..." style="width: 250px; border-radius: 20px 0 0 20px;"
+                            autocomplete="off">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" style="border-radius: 0 20px 20px 0;"
+                                onclick="submitGlobalSearch()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Live dropdown results --}}
+                    <div id="searchDropdown" class="dropdown-menu w-100 shadow-lg"
+                        style="display: none; position: absolute; top: 100%; left: 0; z-index: 9999; min-width: 350px; max-height: 400px; overflow-y: auto;">
+                    </div>
+                </div>
+            </li>
+        @endhasanyrole
     </ul>
 
     <ul class="navbar-nav ml-auto">
@@ -462,7 +486,15 @@
                         <li class="nav-item"><a href="{{ route('school.profile') }}" class="nav-link"><i
                                     class="nav-icon fas fa-cogs"></i>
                                 <p>School Profile</p>
-                            </a></li>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('search.index') }}" class="nav-link @activeRoute('search.*')">
+                                <i class="nav-icon fas fa-search"></i>
+                                <p>Search</p>
+                            </a>
+                        </li>
                     @endrole
 
                 </ul>

@@ -21,7 +21,16 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">List of Sections</h3>
+                        <h3 class="card-title">
+                            All Sections
+                            @if(request('search'))
+                                <span class="badge badge-info ml-2">{{ $sections->total() }} found</span>
+                            @else
+                                <span class="badge badge-secondary ml-2">{{ $sections->total() }} total</span>
+                            @endif
+                        </h3>
+
+                        <x-search-filter :route="route('section.index')" placeholder="Search section or class..." />
                     </div>
 
                     <div class="card-body p-0">
@@ -36,7 +45,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sections as $section)
+                                @forelse($sections as $section)
                                     <tr>
                                         <td>
                                             <strong>{{ $section->classLevel->name ?? 'No Class' }}</strong>
@@ -44,7 +53,7 @@
                                         <td>{{ $section->name }}</td>
                                         <td>{{ $section->capacity }} Students</td>
                                         <td>
-                                            @if ($section->is_active)
+                                            @if($section->is_active)
                                                 <span class="badge badge-success">Active</span>
                                             @else
                                                 <span class="badge badge-secondary">Inactive</span>
@@ -66,14 +75,26 @@
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
                                             <form id="delete-form-{{ $section->id }}"
-                                                action="{{ route('section.destroy', $section->id) }}" method="POST"
-                                                style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
+                                                action="{{ route('section.destroy', $section->id) }}"
+                                                method="POST" style="display:inline;">
+                                                @csrf @method('DELETE')
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            @if(request('search'))
+                                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                                No sections found matching "{{ request('search') }}".
+                                                <a href="{{ route('section.index') }}">Clear search</a>
+                                            @else
+                                                <i class="fas fa-puzzle-piece fa-2x mb-2"></i><br>
+                                                No sections added yet.
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -109,7 +130,7 @@
                             <label for="class_level_id">Class Level</label>
                             <select name="class_level_id" id="class_level_id" class="form-control">
                                 <option value="">Select Class...</option>
-                                @foreach ($classLevels as $class)
+                                @foreach($classLevels as $class)
                                     <option value="{{ $class->id }}">{{ $class->name }}</option>
                                 @endforeach
                             </select>
@@ -140,46 +161,29 @@
 
 @push('scripts')
     <script>
-        // 1. OPEN CREATE MODAL
         function openCreateModal() {
-
-            // Reset the form
             document.getElementById('section-form').reset();
             document.getElementById('section_id').value = '';
             document.getElementById('modal-title').innerText = 'Add New Section';
-
-            // Hide errors
             document.getElementById('error-box').classList.add('d-none');
-
-            // Show Bootstrap Modal
             $('#modal-section').modal('show');
         }
 
-        // 2. OPEN EDIT MODAL (Populate Data)
         function openEditModal(id, name, classId, capacity) {
-            // Fill values
             document.getElementById('section_id').value = id;
             document.getElementById('name').value = name;
             document.getElementById('class_level_id').value = classId;
             document.getElementById('capacity').value = capacity;
-
-            // Update Title
             document.getElementById('modal-title').innerText = 'Edit Section';
-
-            // Hide errors
             document.getElementById('error-box').classList.add('d-none');
-
-            // Show Modal
             $('#modal-section').modal('show');
         }
 
-        // 3. HANDLE AJAX SUBMISSION
         window.handleFormSubmit = async function(e) {
             e.preventDefault();
             let form = e.target;
             let formData = new FormData(form);
             let id = document.getElementById('section_id').value;
-
 
             let url = "{{ route('section.store') }}";
             if (id) {
@@ -206,12 +210,9 @@
                     errorBox.classList.remove('d-none');
                     errorList.innerHTML = Object.values(data.errors).flat().map(msg => `<li>${msg}</li>`).join('');
                 } else if (response.ok) {
-                    // Success Logic
                     $('#modal-section').modal('hide');
                     window.showFlash('success', data.message);
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                    setTimeout(() => location.reload(), 1500);
                 } else {
                     window.showFlash('error', 'Server Error: ' + (data.message || 'Unknown error'));
                 }
@@ -220,11 +221,8 @@
             }
         }
 
-        // 4. HANDLE DELETE
         window.handleDelete = async function(id) {
-            if (!confirm('Are you sure you want to delete this section?')) {
-                return;
-            }
+            if (!confirm('Are you sure you want to delete this section?')) return;
 
             const form = document.getElementById(`delete-form-${id}`);
             const url = form.action;
@@ -232,7 +230,7 @@
 
             try {
                 const response = await fetch(url, {
-                    method: 'POST', // Form specifies DELETE via _method, but we send as POST
+                    method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
@@ -243,14 +241,8 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // 1. Trigger the Global Flash Message
                     window.showFlash('success', data.message || 'Section deleted successfully.');
-
-                    // 2. Remove the row from the table immediately for a "snappy" feel
-                    // Or reload after a delay if you prefer
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                    setTimeout(() => location.reload(), 1500);
                 } else {
                     window.showFlash('error', 'Could not delete: ' + (data.message || 'Server error'));
                 }

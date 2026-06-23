@@ -9,6 +9,7 @@ use App\Imports\StudentsImport;
 use App\Models\ClassLevel;
 use App\Models\ParentProfile;
 use App\Models\School;
+use App\Models\Section;
 use App\Models\StudentProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,24 +21,43 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class StudentAdmissionController extends Controller
 {
-    public function index()
-    // Fetch students scoped to the active school
+    public function index(Request $request, School $school)
     {
-        $schoolId = session('active_school') ?? Auth::user()->school_id;
+        $schoolId = session('active_school');
+        $classLevels = ClassLevel::all();
+        $sections = $request->class_id
+            ? Section::where('class_level_id', $request->class_id)->get()
+            : Section::all();
 
-        if (!$schoolId) {
-            return redirect()->back()->with('error', 'No active school found');
-        }
-
-        $students = User::query()
-            ->role('Student')
+        $students = User::role('Student')
             ->where('school_id', $schoolId)
-            // EAGER LOAD: Get Profile, Section (and its Class), and Parents in one go
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                    ->orWhereHas('studentProfile', function ($q) use ($request) {
+                        $q->where('admission_number', 'like', "%{$request->search}%");
+                    });
+            })
+            ->when($request->class_id, function ($q) use ($request) {
+                $q->whereHas('studentProfile', function ($q) use ($request) {
+                    $q->where('class_level_id', $request->class_id);
+                });
+            })
+            ->when($request->section_id, function ($q) use ($request) {
+                $q->whereHas('studentProfile', function ($q) use ($request) {
+                    $q->where('section_id', $request->section_id);
+                });
+            })
+            ->when($request->gender, function ($q) use ($request) {
+                $q->whereHas('studentProfile', function ($q) use ($request) {
+                    $q->where('gender', $request->gender);
+                });
+            })
             ->with(['studentProfile.section.classLevel', 'parents'])
             ->latest()
-            ->paginate(10);
+            ->paginate(15)
+            ->withQueryString();
 
-        return view('student.index', compact('students'));
+        return view('student.index', compact('students', 'classLevels', 'sections'));
     }
 
     public function create()

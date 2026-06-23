@@ -17,17 +17,26 @@ use Illuminate\Support\Facades\Storage;
 
 class TeacherController extends Controller
 {
-    public function index(Request $request, School $school)
+    public function index(School $school, Request $request)
     {
         $teachers = User::role('Teacher')
             ->where('school_id', session('active_school'))
-            ->with([
-                'teacherProfile',
-                'allocations.subject',
-                'allocations.section.classLevel',
-            ])
-            ->get();
-
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                    ->orWhere('email', 'like', "%{$request->search}%")
+                    ->orWhereHas('teacherProfile', function ($q) use ($request) {
+                        $q->where('employee_id', 'like', "%{$request->search}%")
+                            ->orWhere('qualification', 'like', "%{$request->search}%");
+                    });
+            })
+            ->when($request->gender, function ($q) use ($request) {
+                $q->whereHas('teacherProfile', function ($q) use ($request) {
+                    $q->where('gender', $request->gender);
+                });
+            })
+            ->with(['teacherProfile', 'allocations.subject', 'allocations.section.classLevel'])
+            ->paginate(15)
+            ->withQueryString();
 
         return view('teacher.index', compact('teachers'));
     }

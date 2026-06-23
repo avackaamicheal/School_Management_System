@@ -30,7 +30,11 @@
                 <div class="card card-outline card-primary">
                     <div class="card-header">
                         <h3 class="card-title">All Teachers ({{ $teachers->count() }})</h3>
+                        <x-search-filter :route="route('teachers.index')" placeholder="Search by name, email or employee ID..."
+                    :show-gender="true" />
                     </div>
+
+
                     <div class="card-body table-responsive p-0">
                         <table class="table table-hover table-striped">
                             <thead>
@@ -90,23 +94,35 @@
                                         <td class="align-middle text-right">
                                             <a href="{{ route('teachers.edit', $teacher->id) }}"
                                                 class="btn btn-sm btn-warning">
-                                                <i class="fas fa-edit"></i> Edit
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                             <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST"
                                                 class="d-inline">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger"
                                                     onclick="return confirm('Remove {{ $teacher->name }}? This cannot be undone.')">
-                                                    <i class="fas fa-trash"></i> Remove
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center p-4">
-                                            No teachers added yet.
+                                        <td colspan="6" class="text-center py-4 text-muted">
+                                            @if(request('search'))
+                                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                                No teachers found matching "{{ request('search') }}".
+                                                <a href="{{ route('teachers.index') }}">Clear search</a>
+                                            @else
+                                                No teachers added yet.
                                             <a href="{{ route('teachers.create') }}">Add your first teacher.</a>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="6" class="text-center p-4">
+                                            
                                         </td>
                                     </tr>
                                 @endforelse

@@ -2,22 +2,31 @@
 
 namespace App\Http\Controllers\Subject;
 
-use App\Models\Subject;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
+use App\Models\School;
+use App\Models\Subject;
+use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $subjects = Subject::latest()->paginate(10);
+    public function index(Request $request, School $school)
+{
+    $subjects = Subject::where('school_id', session('active_school'))
+        ->when($request->search, function ($q) use ($request) {
+            $q->where('name', 'like', "%{$request->search}%")
+              ->orWhere('code', 'like', "%{$request->search}%");
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-        return view('academics.subjects.index', compact('subjects'));
-    }
+    return view('academics.subjects.index', compact('subjects'));
+}
 
     /**
      * Show the form for creating a new resource.

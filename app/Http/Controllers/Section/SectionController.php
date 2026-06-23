@@ -2,22 +2,34 @@
 
 namespace App\Http\Controllers\Section;
 
-use App\Models\Section;
-use App\Models\ClassLevel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
+use App\Models\ClassLevel;
+use App\Models\School;
+use App\Models\Section;
+use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, School $school)
     {
         // 1. Fetch Data for the Table
         // Use eager loading (with('classLevel')) to prevent N+1 queries.
-        $sections = Section::with('classLevel')->latest()->paginate(10);
+        $sections = Section::where('school_id', session('active_school'))
+        ->when($request->search, function ($q) use ($request) {
+            $q->where('name', 'like', "%{$request->search}%")
+              ->orWhereHas('classLevel', function ($q) use ($request) {
+                  $q->where('name', 'like', "%{$request->search}%");
+              });
+        })
+        ->with('classLevel')
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
         // 2. Fetch Data for the Modal Dropdown
         // We need the list of classes so the user can pick one when creating a section.

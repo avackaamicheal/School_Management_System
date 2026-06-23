@@ -22,6 +22,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">List of Subjects</h3>
+                        <x-search-filter :route="route('subject.index')" placeholder="Search subjects..."/>
                     </div>
                     <div class="card-body p-0">
                         <table class="table table-striped">
@@ -34,7 +35,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($subjects as $subject)
+                                @forelse ($subjects as $subject)
                                     <tr>
                                         <td>{{ $subject->name }}</td>
                                         <td><span class="badge badge-info">{{ $subject->code }}</span></td>
@@ -60,7 +61,20 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            @if(request('search'))
+                                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                                No subject found matching "{{ request('search') }}".
+                                                <a href="{{ route('subject.index') }}">Clear search</a>
+                                            @else
+                                                <i class="fas fa-puzzle-piece fa-2x mb-2"></i><br>
+                                                No subjects added yet.
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\ClassLevel;
 
-use App\Models\ClassLevel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassLevelRequest;
 use App\Http\Requests\UpdateClassLevelRequest;
+use App\Models\ClassLevel;
+use App\Models\School;
+use Illuminate\Http\Request;
 
 class ClassLevelController extends Controller
 {
@@ -13,13 +15,18 @@ class ClassLevelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, School $school)
     {
         // Fetch classes scoped to the active school (handled by Model Trait)
         // withCount('sections') is great for showing stats like "Grade 1 (3 Sections)"
-        $classLevels = ClassLevel::withCount('sections')
-                        ->latest()
-                        ->paginate(10);
+       $classLevels = ClassLevel::where('school_id', session('active_school'))
+        ->when($request->search, function ($q) use ($request) {
+            $q->where('name', 'like', "%{$request->search}%");
+        })
+        ->with('sections')
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
         return view('academics.classlevels.index', compact('classLevels'));
     }

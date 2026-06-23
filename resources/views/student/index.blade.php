@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- {{dd($students->first())}} --}}
     <div class="content-wrapper">
         <div class="content-header">
             <div class="container-fluid">
@@ -26,18 +25,35 @@
 
         <section class="content">
             <div class="container-fluid">
+
+                {{-- Search & Filter Component --}}
+                {{-- <x-search-filter
+                    :route="route('student.index')"
+                    placeholder="Search by name or admission number..."
+                    :show-class="true"
+                    :show-section="true"
+                    :show-gender="true"
+                    :class-levels="$classLevels"
+                    :sections="$sections"
+                /> --}}
+
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">All Registered Students</h3>
-                        <div class="card-tools">
-                            <div class="input-group input-group-sm" style="width: 250px;">
-                                <input type="text" name="table_search" class="form-control float-right"
-                                    placeholder="Search by name/adm no...">
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                        <h3 class="card-title">
+                            All Registered Students
+                            {{-- Show result count when filtering --}}
+                            @if (request()->hasAny(['search', 'class_id', 'section_id', 'gender']))
+                                <span class="badge badge-info ml-2">
+                                    {{ $students->total() }} found
+                                </span>
+                            @else
+                                <span class="badge badge-secondary ml-2">
+                                    {{ $students->total() }} total
+                                </span>
+                            @endif
+                        </h3>
+
+                        <x-search-filter :route="route('student.index')" placeholder="Search by name/adm no..." />
                     </div>
 
                     <div class="card-body p-0">
@@ -61,7 +77,9 @@
                                                 <span class="username">
                                                     <a href="#">{{ $student->name }}</a>
                                                 </span>
-                                                <span class="description">{{ $student->email ?? 'No Email' }}</span>
+                                                <span class="description">
+                                                    {{ $student->email ?? 'No Email' }}
+                                                </span>
                                             </div>
                                         </td>
                                         <td>
@@ -71,18 +89,21 @@
                                         </td>
                                         <td>
                                             @if ($student->studentProfile && $student->studentProfile->section)
-                                                <strong>{{ $student->studentProfile->section->classLevel->name }}</strong><br>
-                                                <small class="text-muted">Section:
-                                                    {{ $student->studentProfile->section->name }}</small>
+                                                <strong>
+                                                    {{ $student->studentProfile->section->classLevel->name }}
+                                                </strong><br>
+                                                <small class="text-muted">
+                                                    Section: {{ $student->studentProfile->section->name }}
+                                                </small>
                                             @else
                                                 <span class="text-danger">Unassigned</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if ($student->parents->isNotEmpty())
-                                                {{ $student->parents->first()->name }} <br>
+                                                {{ $student->parents->first()->name }}<br>
                                                 <small class="text-muted">
-                                                    {{ $student->parents->first()->pivot->relationship }} -
+                                                    {{ $student->parents->first()->pivot->relationship }} —
                                                     {{ $student->parents->first()->email }}
                                                 </small>
                                             @else
@@ -97,8 +118,6 @@
                                                 onclick="deleteStudent({{ $student->id }})">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-
-                                            {{-- Hidden Delete Form --}}
                                             <form id="delete-form-{{ $student->id }}"
                                                 action="{{ route('student.destroy', $student->id) }}" method="POST"
                                                 style="display:none;">
@@ -109,8 +128,14 @@
                                 @empty
                                     <tr>
                                         <td colspan="5" class="text-center py-4 text-muted">
-                                            <i class="fas fa-users-slash fa-2x mb-2"></i><br>
-                                            No students found. Click "New Admission" to start.
+                                            @if (request()->hasAny(['search', 'class_id', 'section_id', 'gender']))
+                                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                                No students found matching your filters.
+                                                <a href="{{ route('student.index') }}">Clear filters</a>
+                                            @else
+                                                <i class="fas fa-users-slash fa-2x mb-2"></i><br>
+                                                No students found. Click "New Admission" to start.
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforelse
@@ -122,10 +147,12 @@
                         {{ $students->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
+
             </div>
         </section>
     </div>
 
+    {{-- Import Modal --}}
     <div class="modal fade" id="modal-import">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -150,12 +177,15 @@
                             <input type="file" name="file" class="form-control" required>
                         </div>
                         <div class="alert alert-info text-sm">
-                        <strong>Required CSV Headers:</strong><br>
-                        first_name, last_name, email, admission_number, class_level_id, section_id, date_of_birth, gender, address
-                        <br><br>
-                        <em>Note: class_level_id and section_id must be the numeric IDs from your database.</em>
-                    </div>
-                        <a href="{{ route('students.template') }}" class="btn btn-xs btn-default">Download Sample Template</a>
+                            <strong>Required CSV Headers:</strong><br>
+                            first_name, last_name, email, admission_number,
+                            class_level_id, section_id, date_of_birth, gender, address
+                            <br><br>
+                            <em>Note: class_level_id and section_id must be numeric IDs.</em>
+                        </div>
+                        <a href="{{ route('students.template') }}" class="btn btn-xs btn-default">
+                            Download Sample Template
+                        </a>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Upload & Import</button>
@@ -164,6 +194,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @push('scripts')
@@ -190,7 +221,6 @@
 
                 if (response.ok) {
                     window.showFlash('success', data.message);
-                    // Animate and Remove Row
                     row.style.transition = "all 0.5s ease";
                     row.style.opacity = "0";
                     setTimeout(() => row.remove(), 500);

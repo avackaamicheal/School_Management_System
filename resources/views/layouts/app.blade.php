@@ -161,6 +161,86 @@
     </script>
 
     @stack('scripts')
+
+    @hasanyrole('SchoolAdmin')
+<script>
+    const searchInput  = document.getElementById('globalSearchInput');
+    const dropdown     = document.getElementById('searchDropdown');
+    let searchTimeout  = null;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`{{ route('search.live') }}?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(results => {
+                        if (results.length === 0) {
+                            dropdown.innerHTML = `
+                                <div class="dropdown-item text-muted text-center py-3">
+                                    No results found for "${query}"
+                                </div>`;
+                        } else {
+                            dropdown.innerHTML = results.map(item => `
+                                <a href="${item.url}" class="dropdown-item py-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge badge-${item.color} mr-3 p-2">
+                                            <i class="${item.icon}"></i>
+                                        </span>
+                                        <div>
+                                            <div class="font-weight-bold text-sm">${item.title}</div>
+                                            <small class="text-muted">${item.subtitle} — ${item.meta}</small>
+                                        </div>
+                                        <span class="badge badge-light ml-auto">${item.type}</span>
+                                    </div>
+                                </a>
+                            `).join('') + `
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ route('search.index') }}?q=${encodeURIComponent(query)}"
+                                    class="dropdown-item text-center text-primary font-weight-bold">
+                                    <i class="fas fa-search mr-1"></i>
+                                    View all results for "${query}"
+                                </a>
+                            `;
+                        }
+                        dropdown.style.display = 'block';
+                    })
+                    .catch(() => {
+                        dropdown.style.display = 'none';
+                    });
+            }, 300);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Submit on Enter
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                submitGlobalSearch();
+            }
+        });
+    }
+
+    function submitGlobalSearch() {
+        const query = document.getElementById('globalSearchInput').value.trim();
+        if (query) {
+            window.location.href = `{{ route('search.index') }}?q=${encodeURIComponent(query)}`;
+        }
+    }
+</script>
+@endhasanyrole
 </body>
 
 </html>

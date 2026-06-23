@@ -18,6 +18,9 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
+                {{-- <x-search-filter :route="route('admin.grades.index')" placeholder="Search by student name..." :show-section="true"
+                    :show-status="true" :status-options="['published' => 'Published', 'draft' => 'Draft']" :sections="$sections" /> --}}
+
                 <div class="card card-default">
                     <div class="card-body">
                         <form action="{{ resolveRoute('grades.index') }}" method="GET" class="form-inline">

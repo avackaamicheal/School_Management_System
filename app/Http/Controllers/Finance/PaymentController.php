@@ -5,18 +5,28 @@ namespace App\Http\Controllers\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\School;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
     // 1. List Invoices
-    public function index()
+    public function index(School $school, Request $request)
     {
-        // Get all invoices with student info and payments
         $invoices = Invoice::with(['student.studentProfile', 'payments'])
+            ->when($request->search, function ($q) use ($request) {
+                $q->where('invoice_number', 'like', "%{$request->search}%")
+                    ->orWhereHas('student', function ($q) use ($request) {
+                        $q->where('name', 'like', "%{$request->search}%");
+                    });
+            })
+            ->when($request->status, function ($q) use ($request) {
+                $q->where('status', $request->status);
+            })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(15)
+            ->withQueryString();
 
         return view('finances.payments.index', compact('invoices'));
     }
