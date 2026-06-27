@@ -17,6 +17,7 @@ use App\Http\Controllers\Finance\FeeController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\Finance\ReportController;
 use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
+use App\Http\Controllers\QuickSetupController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
 use App\Http\Controllers\SchoolContextController;
@@ -131,6 +132,9 @@ Route::middleware(['auth', 'active'])
             // Search - accessible by SchoolAdmin
             Route::get('/search', [SearchController::class, 'index'])->name('search.index');
             Route::get('/search/live', [SearchController::class, 'live'])->name('search.live');
+
+            Route::get('/quick-setup', [QuickSetupController::class, 'show'])->name('quick-setup.show');
+            Route::post('/quick-setup', [QuickSetupController::class, 'apply'])->name('quick-setup.apply');
         });
 
         // -----------------------------------------------

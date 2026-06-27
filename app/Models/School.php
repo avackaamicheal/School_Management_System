@@ -72,5 +72,23 @@ class School extends Model
         return $sub?->isInGracePeriod() ?? false;
     }
 
+    public function setupStatus(): array
+    {
+        $schoolId = $this->id;
+
+        return [
+            'has_session' => \App\Models\AcademicSession::where('school_id', $schoolId)->exists(),
+            'has_term' => \App\Models\Term::where('school_id', $schoolId)->exists(),
+            'has_class' => \App\Models\ClassLevel::where('school_id', $schoolId)->exists(),
+            'has_section' => \App\Models\Section::where('school_id', $schoolId)->exists(),
+            'has_subject' => \App\Models\Subject::where('school_id', $schoolId)->exists(),
+        ];
+    }
+
+    public function isSetupComplete(): bool
+    {
+        return !in_array(false, $this->setupStatus(), true);
+    }
+
 
 }

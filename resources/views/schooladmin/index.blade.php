@@ -21,6 +21,8 @@
 
         <section class="content">
             <div class="container-fluid">
+                {{-- Setup Checklist --}}
+                <x-setup-checklist :school="$school" />
 
                 {{-- Stats Cards --}}
                 <div class="row">
