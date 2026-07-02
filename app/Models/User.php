@@ -68,6 +68,11 @@ class User extends Authenticatable
         return $this->hasOne(TeacherProfile::class);
     }
 
+    public function parentProfile()
+    {
+        return $this->hasOne(ParentProfile::class, 'user_id');
+    }
+
     // Teacher -> Assignments Relationship
     public function assignments()
     {

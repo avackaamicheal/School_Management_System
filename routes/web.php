@@ -17,6 +17,7 @@ use App\Http\Controllers\Finance\FeeController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\Finance\ReportController;
 use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
+use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\QuickSetupController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
@@ -123,6 +124,17 @@ Route::middleware(['auth', 'active'])
             Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
             Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
             Route::delete('/teachers/{teacher}/allocations/{allocation}', [TeacherController::class, 'destroyAllocation'])->name('teachers.allocations.destroy');
+
+            //Parent management
+            Route::get('/parents', [ParentController::class, 'index'])->name('parents.index');
+            Route::get('/parents/create', [ParentController::class, 'create'])->name('parents.create');
+            Route::post('/parents', [ParentController::class, 'store'])->name('parents.store');
+            Route::get('/parents/search-students', [ParentController::class, 'searchStudents'])->name('parents.search-students');
+            Route::get('/parents/{parent}', [ParentController::class, 'show'])->name('parents.show');
+            Route::get('/parents/{parent}/edit', [ParentController::class, 'edit'])->name('parents.edit');
+            Route::put('/parents/{parent}', [ParentController::class, 'update'])->name('parents.update');
+            Route::post('/parents/{parent}/link-child', [ParentController::class, 'linkChild'])->name('parents.link-child');
+            Route::delete('/parents/{parent}/unlink-child/{student}', [ParentController::class, 'unlinkChild'])->name('parents.unlink-child');
 
             //school
             Route::get('/school-profile', [SchoolController::class, 'show'])->name('school.profile');

@@ -375,6 +375,12 @@
                                     </a></li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parents.index') }}" class="nav-link @activeRoute('parents.*')">
+                                <i class="nav-icon fas fa-user-friends"></i>
+                                <p>Parents</p>
+                            </a>
+                        </li>
 
                         <li class="nav-header">FINANCE</li>
                         <li class="nav-item"><a href="{{ route('fees.index') }}" class="nav-link @activeRoute('fees.*')"><i
