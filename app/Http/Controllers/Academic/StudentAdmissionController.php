@@ -12,6 +12,7 @@ use App\Models\School;
 use App\Models\Section;
 use App\Models\StudentProfile;
 use App\Models\User;
+use App\Notifications\StudentAdmittedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -136,6 +137,21 @@ class StudentAdmissionController extends Controller
             ]);
 
             DB::commit(); // Save everything
+
+            // Notify SchoolAdmin — wrapped separately so failure doesn't affect admission response
+            try {
+                $schoolAdmin = User::where('school_id', session('active_school'))
+                    ->role('SchoolAdmin')
+                    ->first();
+
+                if ($schoolAdmin) {
+                    $schoolAdmin->notify(new StudentAdmittedNotification($studentUser));
+                }
+            } catch (\Exception $e) {
+                Log::warning('StudentAdmitted notification failed: ' . $e->getMessage());
+            }
+
+
 
             return response()->json([
                 'status' => 'success',

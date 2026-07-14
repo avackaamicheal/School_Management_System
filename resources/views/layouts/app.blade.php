@@ -163,32 +163,32 @@
     @stack('scripts')
 
     @hasanyrole('SchoolAdmin')
-<script>
-    const searchInput  = document.getElementById('globalSearchInput');
-    const dropdown     = document.getElementById('searchDropdown');
-    let searchTimeout  = null;
+        <script>
+            const searchInput = document.getElementById('globalSearchInput');
+            const dropdown = document.getElementById('searchDropdown');
+            let searchTimeout = null;
 
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const query = this.value.trim();
 
-            if (query.length < 2) {
-                dropdown.style.display = 'none';
-                return;
-            }
+                    if (query.length < 2) {
+                        dropdown.style.display = 'none';
+                        return;
+                    }
 
-            searchTimeout = setTimeout(() => {
-                fetch(`{{ route('search.live') }}?q=${encodeURIComponent(query)}`)
-                    .then(res => res.json())
-                    .then(results => {
-                        if (results.length === 0) {
-                            dropdown.innerHTML = `
+                    searchTimeout = setTimeout(() => {
+                        fetch(`{{ route('search.live') }}?q=${encodeURIComponent(query)}`)
+                            .then(res => res.json())
+                            .then(results => {
+                                if (results.length === 0) {
+                                    dropdown.innerHTML = `
                                 <div class="dropdown-item text-muted text-center py-3">
                                     No results found for "${query}"
                                 </div>`;
-                        } else {
-                            dropdown.innerHTML = results.map(item => `
+                                } else {
+                                    dropdown.innerHTML = results.map(item => `
                                 <a href="${item.url}" class="dropdown-item py-2">
                                     <div class="d-flex align-items-center">
                                         <span class="badge badge-${item.color} mr-3 p-2">
@@ -209,38 +209,62 @@
                                     View all results for "${query}"
                                 </a>
                             `;
-                        }
-                        dropdown.style.display = 'block';
-                    })
-                    .catch(() => {
+                                }
+                                dropdown.style.display = 'block';
+                            })
+                            .catch(() => {
+                                dropdown.style.display = 'none';
+                            });
+                    }, 300);
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
                         dropdown.style.display = 'none';
-                    });
-            }, 300);
-        });
+                    }
+                });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.style.display = 'none';
+                // Submit on Enter
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        submitGlobalSearch();
+                    }
+                });
             }
-        });
 
-        // Submit on Enter
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                submitGlobalSearch();
+            function submitGlobalSearch() {
+                const query = document.getElementById('globalSearchInput').value.trim();
+                if (query) {
+                    window.location.href = `{{ route('search.index') }}?q=${encodeURIComponent(query)}`;
+                }
             }
-        });
-    }
+        </script>
+    @endhasanyrole
 
-    function submitGlobalSearch() {
-        const query = document.getElementById('globalSearchInput').value.trim();
-        if (query) {
-            window.location.href = `{{ route('search.index') }}?q=${encodeURIComponent(query)}`;
+    <script>
+        function markRead(id, event) {
+            fetch(`/notifications/${id}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                }
+            });
+            // Don't prevent default — let the link navigate
         }
-    }
-</script>
-@endhasanyrole
+
+        function markAllRead(event) {
+            event.preventDefault();
+            fetch('/notifications/read-all', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                }
+            }).then(() => location.reload());
+        }
+    </script>
 </body>
 
 </html>

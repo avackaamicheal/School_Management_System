@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Academic;
 use App\Http\Controllers\Controller;
 use App\Models\AssessmentWeight;
 use App\Models\GradeRecord;
+use App\Models\School;
 use App\Models\Section;
 use App\Models\Subject;
 use App\Models\Term;
 use App\Models\User;
+use App\Notifications\GradePublishedNotification;
 use Illuminate\Http\Request;
 
 class GradeEntryController extends Controller
@@ -25,7 +27,7 @@ class GradeEntryController extends Controller
         $existingGrades = [];
         $isLocked = false;
 
-        $activeTerm = Term::where('is_active', true)->first();
+        $activeTerm = Term::getActive();
 
         if ($request->has('section_id') && $request->has('subject_id')) {
             $selectedSection = Section::find($request->section_id);
@@ -69,19 +71,20 @@ class GradeEntryController extends Controller
         ));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, School $school)
     {
-        $activeTerm = Term::where('is_active', true)->firstOrFail();
+        $activeTerm = Term::getActive();
 
-        // Check if the teacher clicked the "Publish & Lock" button
+        if (!$activeTerm) {
+            return back()->with('error', 'No active term found.');
+        }
+
         $lockGrades = $request->has('publish_grades');
 
         foreach ($request->grades as $studentId => $scores) {
-
-            // Auto-calculate the total score
             $totalScore = array_sum($scores);
 
-            GradeRecord::updateOrCreate(
+            $grade = GradeRecord::updateOrCreate(
                 [
                     'term_id' => $activeTerm->id,
                     'section_id' => $request->section_id,
@@ -89,14 +92,32 @@ class GradeEntryController extends Controller
                     'student_id' => $studentId,
                 ],
                 [
-                    'scores' => $scores, // Laravel automatically converts this array to JSON!
+                    'scores' => $scores,
                     'total_score' => $totalScore,
-                    'is_locked' => $lockGrades
+                    'is_locked' => $lockGrades,
                 ]
             );
+
+            // Only notify when publishing/locking
+            if ($lockGrades) {
+                $student = User::with('parents')->find($studentId);
+
+                if ($student) {
+                    // Notify student
+                    $student->notify(new GradePublishedNotification($grade));
+
+                    // Notify parents
+                    foreach ($student->parents as $parent) {
+                        $parent->notify(new GradePublishedNotification($grade));
+                    }
+                }
+            }
         }
 
-        $message = $lockGrades ? 'Grades published and locked successfully!' : 'Grade draft saved successfully!';
+        $message = $lockGrades
+            ? 'Grades published and locked successfully!'
+            : 'Grade draft saved successfully!';
+
         return back()->with('success', $message);
     }
 }

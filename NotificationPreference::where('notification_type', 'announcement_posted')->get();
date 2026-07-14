@@ -1,0 +1,45 @@
+[90m= [39m[34;4mIlluminate\Notifications\DatabaseNotificationCollection[39;24m {#6407
+    [34mall[39m: [
+      [34;4mIlluminate\Notifications\DatabaseNotification[39;24m {#6411
+        [34mid[39m: "[32mfc6a5543-9ae8-4327-ab48-e37da69430b1[39m",
+        [34mtype[39m: "[32mApp\Notifications\SubscriptionActivatedNotification[39m",
+        [34mnotifiable_type[39m: "[32mApp\Models\User[39m",
+        [34mnotifiable_id[39m: [35m2[39m,
+        [34mdata[39m: "[32m{"title":"Subscription Activated","message":"Your Starter plan is now active.","expires_at":"2026-09-07T11:49:13.000000Z"}[39m",
+        [34mread_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2026-06-09 11:49:19[39m",
+        [34mupdated_at[39m: "[32m2026-06-09 11:49:19[39m",
+      },
+      [34;4mIlluminate\Notifications\DatabaseNotification[39;24m {#6412
+        [34mid[39m: "[32mea0be621-226e-415d-a89c-c77a7440521c[39m",
+        [34mtype[39m: "[32mApp\Notifications\AnnouncementPosted[39m",
+        [34mnotifiable_type[39m: "[32mApp\Models\User[39m",
+        [34mnotifiable_id[39m: [35m2[39m,
+        [34mdata[39m: "[32m{"title":"School Fees","author":"School Admin","announcement_id":7,"message":"New announcement posted."}[39m",
+        [34mread_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2026-04-09 09:08:20[39m",
+        [34mupdated_at[39m: "[32m2026-04-09 09:08:20[39m",
+      },
+      [34;4mIlluminate\Notifications\DatabaseNotification[39;24m {#6413
+        [34mid[39m: "[32mcb413b69-6385-4ec3-a149-4a3e19e51e71[39m",
+        [34mtype[39m: "[32mApp\Notifications\AnnouncementPosted[39m",
+        [34mnotifiable_type[39m: "[32mApp\Models\User[39m",
+        [34mnotifiable_id[39m: [35m2[39m,
+        [34mdata[39m: "[32m{"title":"School Resumption","author":"David Jesse","announcement_id":6,"message":"New announcement posted."}[39m",
+        [34mread_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2026-04-07 11:15:30[39m",
+        [34mupdated_at[39m: "[32m2026-04-07 11:15:30[39m",
+      },
+      [34;4mIlluminate\Notifications\DatabaseNotification[39;24m {#6414
+        [34mid[39m: "[32me5e8562f-b8cf-41ea-9e6c-71a1a06efe30[39m",
+        [34mtype[39m: "[32mApp\Notifications\AnnouncementPosted[39m",
+        [34mnotifiable_type[39m: "[32mApp\Models\User[39m",
+        [34mnotifiable_id[39m: [35m2[39m,
+        [34mdata[39m: "[32m{"title":"Resumption","author":"School Admin","announcement_id":2,"message":"New announcement posted."}[39m",
+        [34mread_at[39m: [36mnull[39m,
+        [34mcreated_at[39m: "[32m2026-03-03 13:17:02[39m",
+        [34mupdated_at[39m: "[32m2026-03-03 13:17:02[39m",
+      },
+    ],
+  }
+

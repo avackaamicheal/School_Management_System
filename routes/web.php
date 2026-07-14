@@ -16,6 +16,7 @@ use App\Http\Controllers\Communication\MessageController;
 use App\Http\Controllers\Finance\FeeController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\Finance\ReportController;
+use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
 use App\Http\Controllers\Parent\ParentController;
 use App\Http\Controllers\QuickSetupController;
@@ -41,6 +42,19 @@ Route::get('/', function () {
 });
 Route::get('/register/school', [SchoolRegistrationController::class, 'showForm'])->name('school.register');
 Route::post('/register/school', [SchoolRegistrationController::class, 'store'])->name('school.register.store');
+
+// notifications route available to all roles
+Route::middleware(['auth'])->group(function () {
+    Route::post('/notifications/{id}/read', function ($id) {
+        Auth::user()->notifications->where('id', $id)->update(['read_at' => now()]);
+        return response()->json(['status' => 'ok']);
+    })->name('notifications.read');
+
+    Route::post('/notifications/read-all', function () {
+        Auth::user()->unreadNotifications->markAsRead();
+        return response()->json(['status' => 'ok']);
+    })->name('notifications.read-all');
+});
 
 // SuperAdmin routes (no school prefix)
 Route::middleware(['auth', 'role:SuperAdmin', 'tenant'])
@@ -147,6 +161,10 @@ Route::middleware(['auth', 'active'])
 
             Route::get('/quick-setup', [QuickSetupController::class, 'show'])->name('quick-setup.show');
             Route::post('/quick-setup', [QuickSetupController::class, 'apply'])->name('quick-setup.apply');
+            Route::get('/notification-preferences', [NotificationPreferenceController::class, 'index'])
+                ->name('notification.preferences');
+            Route::post('/notification-preferences', [NotificationPreferenceController::class, 'update'])
+                ->name('notification.preferences.update');
         });
 
         // -----------------------------------------------

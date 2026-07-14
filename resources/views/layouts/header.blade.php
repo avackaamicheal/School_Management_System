@@ -144,36 +144,65 @@
                 </li>
             @endrole
 
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="far fa-bell"></i>
-                    <span class="badge badge-warning navbar-badge">3</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">3 Notifications</span>
-                    <div class="dropdown-divider"></div>
+            {{-- Replace the entire bell li from here --}}
+            @auth
+                <li class="nav-item dropdown">
+                    @php
+                        $unreadCount = auth()->user()->unreadNotifications->count();
+                        $recentNotifications = auth()->user()->unreadNotifications->take(5);
+                    @endphp
 
-                    @role('Teacher')
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-file-alt mr-2"></i> 2 Assignments Submitted
-                            <span class="float-right text-muted text-sm">3 mins</span>
-                        </a>
-                        @elserole('Student')
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-chalkboard mr-2"></i> Homework Due: Math
-                            <span class="float-right text-muted text-sm">2 hours</span>
-                        </a>
-                    @else
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-envelope mr-2"></i> System Update
-                            <span class="float-right text-muted text-sm">1 day</span>
-                        </a>
-                    @endrole
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        @if ($unreadCount > 0)
+                            <span class="badge badge-danger navbar-badge">{{ $unreadCount }}</span>
+                        @endif
+                    </a>
 
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-                </div>
-            </li>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">
+                            {{ $unreadCount }} Unread Notification{{ $unreadCount != 1 ? 's' : '' }}
+                        </span>
+                        <div class="dropdown-divider"></div>
+
+                        @forelse($recentNotifications as $notification)
+                            @php $data = $notification->data; @endphp
+                            <a href="{{ $data['url'] ?? '#' }}" class="dropdown-item"
+                                onclick="markRead('{{ $notification->id }}', event)">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge badge-{{ $data['color'] ?? 'secondary' }} mr-2 p-2"
+                                        style="min-width: 32px; text-align: center;">
+                                        <i class="{{ $data['icon'] ?? 'fas fa-bell' }}"></i>
+                                    </span>
+                                    <div style="min-width: 0;">
+                                        <div class="font-weight-bold text-sm text-truncate">
+                                            {{ $data['title'] ?? 'Notification' }}
+                                        </div>
+                                        <small class="text-muted text-truncate d-block">
+                                            {{ Str::limit($data['message'] ?? '', 50) }}
+                                        </small>
+                                        <small class="text-muted">
+                                            {{ $notification->created_at->diffForHumans() }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                        @empty
+                            <div class="dropdown-item text-center text-muted py-3">
+                                <i class="fas fa-bell-slash mr-1"></i> No new notifications
+                            </div>
+                        @endforelse
+
+                        @if ($unreadCount > 0)
+                            <a href="#" class="dropdown-item dropdown-footer text-center" onclick="markAllRead(event)">
+                                <i class="fas fa-check-double mr-1"></i> Mark all as read
+                            </a>
+                        @endif
+                    </div>
+                </li>
+            @endauth
+            {{-- To here --}}
         @endauth
 
         @auth
@@ -499,6 +528,12 @@
                             <a href="{{ route('search.index') }}" class="nav-link @activeRoute('search.*')">
                                 <i class="nav-icon fas fa-search"></i>
                                 <p>Search</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('notification.preferences') }}" class="nav-link @activeRoute('notification.preferences')">
+                                <i class="nav-icon fas fa-bell"></i>
+                                <p>Notifications</p>
                             </a>
                         </li>
                     @endrole

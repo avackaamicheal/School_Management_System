@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\ClassroomAssignment;
+use App\Models\Invoice;
+use App\Models\NotificationPreference;
 use App\Models\StudentProfile;
 use App\Models\TeacherProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -113,7 +115,7 @@ class User extends Authenticatable
 
     public function invoices()
     {
-        return $this->hasMany(\App\Models\Invoice::class, 'student_id');
+        return $this->hasMany(Invoice::class, 'student_id');
     }
 
     public function allocations()
@@ -134,5 +136,25 @@ class User extends Authenticatable
         }
 
         return [];
+    }
+
+    public function notificationPreferences()
+    {
+        return $this->hasMany(NotificationPreference::class);
+    }
+
+    public function wantsNotification(string $type, string $channel = 'email'): bool
+    {
+        $pref = $this->notificationPreferences()
+            ->where('notification_type', $type)
+            ->first();
+
+        // Default: all enabled if no preference set
+        if (!$pref)
+            return true;
+
+        return $channel === 'email'
+            ? $pref->email_enabled
+            : $pref->in_app_enabled;
     }
 }

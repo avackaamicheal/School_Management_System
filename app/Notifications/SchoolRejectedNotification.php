@@ -3,40 +3,39 @@
 namespace App\Notifications;
 
 use App\Models\School;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class SchoolRejectedNotification extends Notification
+class SchoolRejectedNotification extends BaseNotification
 {
-    use Queueable;
-
     public function __construct(
         public School $school,
         public string $reason
     ) {}
 
-    public function via(object $notifiable): array
+    public function getType(): string
     {
-        return ['mail', 'database'];
+        return 'school_rejected';
     }
 
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your School Registration Was Not Approved')
+            ->subject('Your School Has Been Deactivated')
             ->greeting("Hello {$notifiable->name},")
-            ->line("Unfortunately, your school registration for **{$this->school->name}** was not approved.")
+            ->line("Your school **{$this->school->name}** has been deactivated.")
             ->line("**Reason:** {$this->reason}")
-            ->line('If you believe this is a mistake, please contact our support team.')
+            ->line('Please contact our support team if you believe this is a mistake.')
             ->action('Contact Support', url('/'));
     }
 
     public function toArray(object $notifiable): array
     {
         return [
-            'title'   => 'School Registration Rejected',
-            'message' => "Your school {$this->school->name} was not approved. Reason: {$this->reason}",
+            'title'   => 'School Deactivated',
+            'message' => "{$this->school->name} has been deactivated. Reason: {$this->reason}",
+            'url'     => route('schooladmin.rejected'),
+            'icon'    => 'fas fa-ban',
+            'color'   => 'danger',
         ];
     }
 }

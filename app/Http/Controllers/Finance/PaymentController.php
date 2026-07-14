@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\School;
+use App\Models\User;
+use App\Notifications\PaymentReceivedNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -41,30 +44,44 @@ class PaymentController extends Controller
             'payment_date' => 'required|date',
         ]);
 
-        // Record the payment
-        Payment::create([
+        // Record payment
+        $payment = Payment::create([
             'invoice_id' => $invoice->id,
-            'amount' => $request->input('amount'),
-            'method' => $request->input('method'),
-            'reference' => $request->input('reference'),
-            'payment_date' => $request->input('payment_date'),
+            'amount' => $request->amount,
+            'method' => $request->method,
+            'reference' => $request->reference,
+            'payment_date' => $request->payment_date,
         ]);
 
-        // Refresh the invoice to get updated balance
+        // Refresh invoice and update status
         $invoice->refresh();
+        $invoice->update([
+            'status' => $invoice->balance() <= 0 ? 'PAID' : 'PARTIAL'
+        ]);
 
-        // Update the Invoice Status dynamically
-        if ($invoice->balance() <= 0) {
-            $invoice->update(['status' => 'PAID']);
-        } else {
-            $invoice->update(['status' => 'PARTIAL']);
+        // Notify parents and admin — wrapped separately
+        try {
+            $payment->load('invoice.student.parents');
+
+            $payment->invoice->student->parents->each(function ($parent) use ($payment) {
+                $parent->notify(new PaymentReceivedNotification($payment));
+            });
+
+            $schoolAdmin = User::where('school_id', session('active_school'))
+                ->role('SchoolAdmin')
+                ->first();
+
+            if ($schoolAdmin) {
+                $schoolAdmin->notify(new PaymentReceivedNotification($payment));
+            }
+        } catch (\Exception $e) {
+            Log::warning("Payment notification failed for payment {$payment->id}: " . $e->getMessage());
         }
 
         return back()->with('success', 'Payment recorded successfully!');
     }
-
     // 3. Generate PDF Receipt
-    public function receipt($school, Payment $payment)
+    public function receipt(School $school, Payment $payment)
     {
         // Load relationships needed for the receipt
         $payment->load(['invoice.student.studentProfile', 'invoice.items']);

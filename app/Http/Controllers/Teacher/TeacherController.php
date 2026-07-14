@@ -11,8 +11,12 @@ use App\Models\School;
 use App\Models\Subject;
 use App\Models\TeacherProfile;
 use App\Models\User;
+use App\Notifications\NewAssignmentNotification;
+use App\Notifications\TeacherAddedNotification;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class TeacherController extends Controller
@@ -48,7 +52,6 @@ class TeacherController extends Controller
 
     public function store(StoreTeacherRequest $request, School $school)
     {
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -77,7 +80,21 @@ class TeacherController extends Controller
             'address' => $request->address,
         ]);
 
-        return redirect()->route('teachers.index')->with('success', 'Teacher added successfully!');
+        // Notify SchoolAdmin — wrapped separately
+        try {
+            $schoolAdmin = User::where('school_id', session('active_school'))
+                ->role('SchoolAdmin')
+                ->first();
+
+            if ($schoolAdmin) {
+                $schoolAdmin->notify(new TeacherAddedNotification($user));
+            }
+        } catch (\Exception $e) {
+            Log::warning("TeacherAdded notification failed: " . $e->getMessage());
+        }
+
+        return redirect()->route('teachers.index')
+            ->with('success', 'Teacher added successfully!');
     }
 
     public function edit(School $school, User $teacher)
@@ -156,18 +173,26 @@ class TeacherController extends Controller
         ]);
 
         try {
-            ClassroomAssignment::create([
+            $allocation = ClassroomAssignment::create([
                 'teacher_id' => $teacher->id,
                 'subject_id' => $request->subject_id,
                 'section_id' => $request->section_id,
             ]);
 
+            // Notify the teacher of their new assignment
+            try {
+                $allocation->load(['subject', 'section.classLevel']);
+                $teacher->notify(new NewAssignmentNotification($allocation));
+
+            } catch (\Exception $e) {
+                Log::warning("NewAssignment notification failed for teacher {$teacher->id}: " . $e->getMessage());
+            }
+
             return back()->with('success', $teacher->name . ' assigned successfully!');
 
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             return back()->with('error', 'This teacher is already assigned to this subject in this section.');
         }
-
     }
 
     public function destroyAllocation(School $school, User $teacher, ClassroomAssignment $allocation)

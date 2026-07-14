@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\School;
 use App\Models\User;
-use App\Notifications\AnnouncementPosted;
+use App\Notifications\AnnouncementPostedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -39,15 +39,21 @@ class AnnouncementController extends Controller
         $announcement = Announcement::create([
             'author_id' => Auth::id(),
             'title' => $request->title,
-            'content'     => $request->content,
+            'content' => $request->content,
             'target_role' => $request->target_role,
             'publish_at' => $request->publish_at ?? now(),
             'expires_at' => $request->expires_at,
         ]);
 
-        // If it's scheduled to publish immediately, send the notifications now
+        // Only send notifications if publishing immediately
         if ($announcement->publish_at <= now()) {
-            $this->broadcastNotification($announcement);
+            $targetUsers = User::where('school_id', session('active_school'))
+                ->when($announcement->target_role, function ($q) use ($announcement) {
+                    $q->role($announcement->target_role);
+                })
+                ->get();
+
+            Notification::send($targetUsers, new AnnouncementPostedNotification($announcement));
         }
 
         return back()->with('success', 'Announcement posted successfully!');
@@ -57,19 +63,5 @@ class AnnouncementController extends Controller
     {
         $announcement->delete();
         return back()->with('success', 'Announcement deleted.');
-    }
-
-    // Helper method to target the correct users
-    private function broadcastNotification($announcement)
-    {
-        $users = User::query();
-
-        // If a specific role is targeted, filter by that role
-        if ($announcement->target_role) {
-            $users->role($announcement->target_role);
-        }
-
-        // Send the database notification to the targeted users
-        Notification::send($users->get(), new AnnouncementPosted($announcement));
     }
 }

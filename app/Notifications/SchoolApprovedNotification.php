@@ -3,19 +3,17 @@
 namespace App\Notifications;
 
 use App\Models\School;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class SchoolApprovedNotification extends Notification
+class SchoolApprovedNotification extends BaseNotification
 {
-    use Queueable;
-
-    public function __construct(public School $school) {}
-
-    public function via(object $notifiable): array
+    public function __construct(public School $school)
     {
-        return ['mail', 'database'];
+    }
+
+    public function getType(): string
+    {
+        return 'school_approved';
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -32,9 +30,11 @@ class SchoolApprovedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'title'     => 'School Registration Approved',
-            'message'   => "Your school {$this->school->name} has been approved.",
-            'school_id' => $this->school->id,
+            'title' => 'School Registration Approved',
+            'message' => "Your school {$this->school->name} has been approved. Welcome aboard!",
+            'url' => route('login'),
+            'icon' => 'fas fa-check-circle',
+            'color' => 'success',
         ];
     }
 }

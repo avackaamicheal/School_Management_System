@@ -16,17 +16,25 @@ class Attendance extends Model
         'date',
         'status',
         'remarks'
-    ] ;
+    ];
 
-    public function term()  {
+    public function term()
+    {
         return $this->belongsTo(Term::class);
     }
 
-    public function section(){
-      return $this->belongsTo(Section::class);
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
     }
 
-    public function user() {
-        return $this->belongsTo(User::class,'student_id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
     }
 }

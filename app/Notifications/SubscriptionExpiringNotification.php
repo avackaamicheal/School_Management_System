@@ -3,21 +3,15 @@
 namespace App\Notifications;
 
 use App\Models\School;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class SubscriptionExpiringNotification extends Notification
+class SubscriptionExpiringNotification extends BaseNotification
 {
-    use Queueable;
+    public function __construct(public School $school) {}
 
-    public function __construct(public School $school)
+    public function getType(): string
     {
-    }
-
-    public function via(object $notifiable): array
-    {
-        return ['mail', 'database'];
+        return 'subscription_expiring';
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -33,8 +27,11 @@ class SubscriptionExpiringNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'title' => 'Subscription Expiring Soon',
-            'message' => "Your subscription expires on {$this->school->subscription_expires_at->format('M d, Y')}.",
+            'title'   => 'Subscription Expiring Soon',
+            'message' => "Your subscription expires on {$this->school->subscription_expires_at->format('M d, Y')}. Renew now.",
+            'url'     => route('subscription.index'),
+            'icon'    => 'fas fa-exclamation-triangle',
+            'color'   => 'warning',
         ];
     }
 }

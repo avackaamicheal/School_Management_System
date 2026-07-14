@@ -3,21 +3,17 @@
 namespace App\Notifications;
 
 use App\Models\SchoolSubscription;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class SubscriptionActivatedNotification extends Notification
+class SubscriptionActivatedNotification extends BaseNotification
 {
-    use Queueable;
-
     public function __construct(public SchoolSubscription $subscription)
     {
     }
 
-    public function via(object $notifiable): array
+    public function getType(): string
     {
-        return ['mail', 'database'];
+        return 'subscription_activated';
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -36,8 +32,10 @@ class SubscriptionActivatedNotification extends Notification
     {
         return [
             'title' => 'Subscription Activated',
-            'message' => "Your {$this->subscription->plan->name} plan is now active.",
-            'expires_at' => $this->subscription->expires_at,
+            'message' => "Your {$this->subscription->plan->name} plan is now active until {$this->subscription->expires_at->format('M d, Y')}.",
+            'url' => route('schooladmin.dashboard', ['school' => $notifiable->school->slug]),
+            'icon' => 'fas fa-check-circle',
+            'color' => 'success',
         ];
     }
 }

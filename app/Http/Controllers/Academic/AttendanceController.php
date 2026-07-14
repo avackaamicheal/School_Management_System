@@ -9,6 +9,7 @@ use App\Models\School;
 use App\Models\Section;
 use App\Models\Term;
 use App\Models\User;
+use App\Notifications\AbsentAlertNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -83,7 +84,8 @@ class AttendanceController extends Controller
             'remarks.*' => 'nullable|string|max:255',
         ]);
 
-        $activeTerm = Term::where('is_active', true)->first();
+        $activeTerm = Term::getActive();
+
         if (!$activeTerm) {
             return back()->with('error', 'Please set an active Term in Academic Settings first.');
         }
@@ -91,7 +93,8 @@ class AttendanceController extends Controller
         foreach ($request->attendance as $studentId => $status) {
             $remark = $request->remarks[$studentId] ?? null;
 
-            Attendance::updateOrCreate(
+            // Use the returned model directly — no second query needed
+            $attendance = Attendance::updateOrCreate(
                 [
                     'student_id' => $studentId,
                     'date' => $request->date,
@@ -103,6 +106,17 @@ class AttendanceController extends Controller
                     'remarks' => $remark,
                 ]
             );
+
+            // Only notify if marked ABSENT
+            if ($status === 'ABSENT') {
+                $student = User::with('parents')->find($studentId);
+
+                if ($student && $student->parents->isNotEmpty()) {
+                    foreach ($student->parents as $parent) {
+                        $parent->notify(new AbsentAlertNotification($attendance));
+                    }
+                }
+            }
         }
 
         return back()->with('success', 'Attendance recorded successfully!');

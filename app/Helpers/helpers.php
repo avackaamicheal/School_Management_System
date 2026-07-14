@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Auth;
 
 if (!function_exists('resolveRoute')) {
-    function resolveRoute(string $name, mixed $params = []): string
+    function resolveRoute(string $name, mixed $params = [], ?\App\Models\User $user = null): string
     {
-        $user = Auth::user();
+        $user ??= Auth::user();
 
         if (!$user) {
             return route($name, $params);

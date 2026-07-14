@@ -7,17 +7,20 @@ use App\Models\ClassLevel;
 use App\Models\FeeStructure;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\School;
 use App\Models\Term;
 use App\Models\User;
+use App\Notifications\InvoiceGeneratedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class FeeController extends Controller
 {
-    public function index()
+    public function index(School $school)
     {
         $classLevels = ClassLevel::all();
-        $activeTerm = Term::where('is_active', true)->first();
+        $activeTerm = Term::getActive();
 
         $feeStructures = FeeStructure::with('classLevel')
             ->where('term_id', $activeTerm?->id)
@@ -27,7 +30,7 @@ class FeeController extends Controller
         return view('finances.fees.index', compact('classLevels', 'activeTerm', 'feeStructures'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, School $school)
     {
         $request->validate([
             'class_level_id' => 'required|exists:class_levels,id',
@@ -35,7 +38,7 @@ class FeeController extends Controller
             'amount' => 'required|numeric|min:0',
         ]);
 
-        $activeTerm = Term::where('is_active', true)->firstOrFail();
+        $activeTerm = Term::getActive();
 
         FeeStructure::create([
             'term_id' => $activeTerm->id,
@@ -47,14 +50,14 @@ class FeeController extends Controller
         return back()->with('success', 'Fee structure added successfully!');
     }
 
-    public function generateInvoices(Request $request)
+    public function generateInvoices(Request $request, School $school)
     {
         $request->validate([
             'class_level_id' => 'required|exists:class_levels,id',
             'due_date' => 'required|date',
         ]);
 
-        $activeTerm = Term::where('is_active', true)->firstOrFail();
+        $activeTerm = Term::getActive();
         $classLevelId = $request->class_level_id;
 
         // 1. Get the configured fees for this class
@@ -92,6 +95,10 @@ class FeeController extends Controller
                     'status' => 'UNPAID',
                 ]);
 
+                foreach ($student->parents as $parent) {
+                    $parent->notify(new InvoiceGeneratedNotification($invoice));
+                }
+
                 // Create the individual line items
                 foreach ($fees as $fee) {
                     InvoiceItem::create([
@@ -100,6 +107,17 @@ class FeeController extends Controller
                         'amount' => $fee->amount,
                     ]);
                 }
+
+                // Notify parents — wrapped separately
+                try {
+                    foreach ($student->parents as $parent) {
+                        $parent->notify(new InvoiceGeneratedNotification($invoice));
+                        
+                    }
+                } catch (\Exception $e) {
+                    Log::warning("Invoice notification failed for student {$student->id}: " . $e->getMessage());
+                }
+
                 $generatedCount++;
             }
         }
