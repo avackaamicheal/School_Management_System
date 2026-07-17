@@ -10,10 +10,6 @@
 
         <section class="content">
             <div class="container-fluid">
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-
                 <form action="{{ route('notification.preferences') }}" method="POST">
                     @csrf @method('POST')
 

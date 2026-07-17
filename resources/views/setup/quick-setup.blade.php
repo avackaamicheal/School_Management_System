@@ -10,10 +10,6 @@
 
     <section class="content">
         <div class="container-fluid">
-            @if(session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-
             <form action="{{ route('quick-setup.apply') }}" method="POST">
                 @csrf
 

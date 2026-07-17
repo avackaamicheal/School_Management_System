@@ -11,13 +11,6 @@
         <section class="content">
             <div class="container-fluid">
 
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-
                 {{-- <x-search-filter :route="route('admin.grades.index')" placeholder="Search by student name..." :show-section="true"
                     :show-status="true" :status-options="['published' => 'Published', 'draft' => 'Draft']" :sections="$sections" /> --}}
 

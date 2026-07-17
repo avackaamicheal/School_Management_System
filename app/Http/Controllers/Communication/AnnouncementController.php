@@ -60,8 +60,7 @@ class AnnouncementController extends Controller
     }
 
     public function destroy(Request $request, $school, Announcement $announcement)
-    {
-        $announcement->delete();
+    {        $announcement->delete();
         return back()->with('success', 'Announcement deleted.');
     }
 }

@@ -77,9 +77,6 @@
         @include('layouts.header')
 
         <div>
-            <div id="ajax-alert-container"
-                style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;"></div>
-
             @include('partials.alert') {{-- This handles standard Session flashes --}}
 
             @yield('content')
@@ -144,8 +141,7 @@
             const alertHtml = `
             <div class="alert ${alertClass} alert-dismissible fade show shadow-sm">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h5><i class="icon fas ${icon}"></i> ${type === 'success' ? 'Success' : 'Error'}</h5>
-                ${message}
+                <i class="icon fas ${icon} mr-1"></i> ${message}
             </div>
         `;
 

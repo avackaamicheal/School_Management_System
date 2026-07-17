@@ -10,6 +10,9 @@ use App\Models\User;
 use App\Notifications\SchoolApprovedNotification;
 use App\Notifications\SchoolRejectedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class SchoolController extends Controller
 {
@@ -49,7 +52,8 @@ class SchoolController extends Controller
      */
     public function show(School $school)
     {
-        return view('school.show', compact('school'));
+        $admin = Auth::user();
+        return view('school.show', compact('school', 'admin'));
     }
 
     /**
@@ -67,10 +71,37 @@ class SchoolController extends Controller
     {
         $validatedData = $request->validated();
 
-        // Option A: Update only specific fields from the validated array
+        if ($request->hasFile('logo')) {
+            if ($school->logo) {
+                Storage::disk('public')->delete($school->logo);
+            }
+            $validatedData['logo'] = $request->file('logo')->store('school-logos', 'public');
+        }
+
         $school->update($validatedData);
 
-        return redirect()->route('school.index')->with('success', 'School updated successfully');
+        if ($request->filled('admin_name')) {
+            $admin = Auth::user();
+            $adminData = [
+                'name'  => $request->admin_name,
+                'email' => $request->admin_email,
+            ];
+
+            if ($request->hasFile('avatar')) {
+                if ($admin->avatar) {
+                    Storage::disk('public')->delete($admin->avatar);
+                }
+                $adminData['avatar'] = $request->file('avatar')->store('admin-avatars', 'public');
+            }
+
+            $admin->update($adminData);
+
+            if ($request->filled('admin_password')) {
+                $admin->update(['password' => Hash::make($request->admin_password)]);
+            }
+        }
+
+        return redirect()->route('school.profile')->with('success', 'School profile updated successfully!');
     }
 
     /**

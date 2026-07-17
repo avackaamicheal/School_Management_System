@@ -24,13 +24,13 @@
                     <form action="{{ route('search.index') }}" method="GET">
                         <div class="row">
                             {{-- Search Input --}}
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="input-group">
-                                    <input type="text" name="q" class="form-control form-control-lg"
-                                        placeholder="Search students, teachers, invoices..."
+                                    <input type="text" name="q" class="form-control"
+                                        placeholder="Search..."
                                         value="{{ $query }}" autofocus>
                                     <div class="input-group-append">
-                                        <button type="submit" class="btn btn-primary btn-lg">
+                                        <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>
@@ -39,7 +39,7 @@
 
                             {{-- Type Filter --}}
                             <div class="col-md-2">
-                                <select name="type" class="form-control form-control-lg">
+                                <select name="type" class="form-control">
                                     <option value="all" {{ $type == 'all' ? 'selected' : '' }}>
                                         All Types
                                     </option>
@@ -60,9 +60,9 @@
 
                             {{-- Class Filter --}}
                             <div class="col-md-2">
-                                <select name="class_id" class="form-control form-control-lg"
+                                <select name="class_id" class="form-control"
                                     onchange="this.form.submit()">
-                                    <option value="">All Classes</option>
+                                    <option value="">Classes</option>
                                     @foreach($classLevels as $class)
                                         <option value="{{ $class->id }}"
                                             {{ $classId == $class->id ? 'selected' : '' }}>
@@ -74,8 +74,8 @@
 
                             {{-- Section Filter --}}
                             <div class="col-md-2">
-                                <select name="section_id" class="form-control form-control-lg">
-                                    <option value="">All Sections</option>
+                                <select name="section_id" class="form-control">
+                                    <option value="">Sections</option>
                                     @foreach($sections as $section)
                                         <option value="{{ $section->id }}"
                                             {{ $sectionId == $section->id ? 'selected' : '' }}>
@@ -86,8 +86,8 @@
                             </div>
 
                             {{-- Gender Filter --}}
-                            <div class="col-md-1">
-                                <select name="gender" class="form-control form-control-lg">
+                            <div class="col-md-2">
+                                <select name="gender" class="form-control">
                                     <option value="">Gender</option>
                                     <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>
                                         Male
@@ -99,8 +99,8 @@
                             </div>
 
                             {{-- Status Filter --}}
-                            <div class="col-md-1">
-                                <select name="status" class="form-control form-control-lg">
+                            <div class="col-md-2">
+                                <select name="status" class="form-control">
                                     <option value="">Status</option>
                                     <option value="PAID" {{ $status == 'PAID' ? 'selected' : '' }}>
                                         Paid

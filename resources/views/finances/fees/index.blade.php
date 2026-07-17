@@ -10,13 +10,6 @@
 
         <section class="content">
             <div class="container-fluid">
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-
                 <div class="row">
                     <div class="col-md-7">
                         <div class="card card-outline card-primary">

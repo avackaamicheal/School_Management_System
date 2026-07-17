@@ -24,7 +24,7 @@ class UpdateSchoolRequest extends FormRequest
     {
 
         $school = $this->route('school');
-        
+
         return [
             'name'           => ['required', 'string', 'max:255'],
             'email'          => [
@@ -33,8 +33,10 @@ class UpdateSchoolRequest extends FormRequest
                 Rule::unique('schools')->ignore($school->id)
             ],
             'address'        => ['required', 'string', 'max:255'],
-            'principal_name' => ['required', 'string', 'max:255'],
+            //'principal_name' => ['required', 'string', 'max:255'],
             'phone_number'   => ['required', 'string'],
+            'logo'           => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'avatar'         => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
 
     }

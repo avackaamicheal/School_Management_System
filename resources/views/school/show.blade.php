@@ -13,14 +13,12 @@
 
     <section class="content">
         <div class="container-fluid">
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
             @if($errors->any())
                 <div class="alert alert-danger">{{ $errors->first() }}</div>
             @endif
 
-            <form action="{{ route('school.profile.update', $school->slug) }}" method="POST">
+            <form action="{{ route('school.profile.update', $school->slug) }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf @method('PUT')
 
                 <div class="row">
@@ -31,6 +29,16 @@
                                 <h3 class="card-title">Basic Information</h3>
                             </div>
                             <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <label for="logo" style="cursor: pointer;">
+                                        <img src="{{ $school->logo ? asset('storage/' . $school->logo) : asset('dist/img/AdminLTELogo.png') }}"
+                                            id="logo-preview" alt="School Logo"
+                                            style="width: 100px; height: 100px; object-fit: contain; border: 2px dashed #ddd; border-radius: 8px; padding: 5px;">
+                                        <div class="text-muted small mt-1">Click to upload logo</div>
+                                    </label>
+                                    <input type="file" name="logo" id="logo" class="d-none" accept="image/*"
+                                        onchange="document.getElementById('logo-preview').src = URL.createObjectURL(this.files[0])">
+                                </div>
                                 <div class="form-group">
                                     <label>School Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control"
@@ -55,34 +63,46 @@
                         </div>
                     </div>
 
-                    {{-- Right: Admin Info --}}
+                    {{-- Right: Admin Profile --}}
                     <div class="col-md-6">
                         <div class="card card-outline card-info">
                             <div class="card-header">
-                                <h3 class="card-title">Administration</h3>
+                                <h3 class="card-title">Admin Profile</h3>
                             </div>
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label>Principal Name</label>
-                                    <input type="text" name="principal_name" class="form-control"
-                                        value="{{ old('principal_name', $school->principal_name) }}">
+                                    <label>Your Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="admin_name" class="form-control"
+                                        value="{{ old('admin_name', $admin->name) }}" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>School Slug</label>
-                                    <input type="text" class="form-control bg-light"
-                                        value="{{ $school->slug }}" readonly disabled>
-                                    <small class="text-muted">
-                                        Auto-generated from school name. Contact SuperAdmin to change.
-                                    </small>
+                                    <label>Your Email <span class="text-danger">*</span></label>
+                                    <input type="email" name="admin_email" class="form-control"
+                                        value="{{ old('admin_email', $admin->email) }}" required>
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <label>New Password</label>
+                                    <input type="password" name="admin_password" class="form-control"
+                                        placeholder="Leave blank to keep current">
                                 </div>
                                 <div class="form-group">
-                                    <label>School Status</label>
-                                    <input type="text" class="form-control bg-light"
-                                        value="{{ $school->is_active ? 'Active' : 'Inactive' }}"
-                                        readonly disabled>
-                                    <small class="text-muted">
-                                        Contact SuperAdmin to change status.
-                                    </small>
+                                    <label>Confirm Password</label>
+                                    <input type="password" name="admin_password_confirmation" class="form-control"
+                                        placeholder="Confirm new password">
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <label>Profile Picture</label>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('dist/img/user2-160x160.jpg') }}"
+                                            id="avatar-preview" alt="Avatar"
+                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid #ddd;">
+                                        <div class="ml-3">
+                                            <input type="file" name="avatar" accept="image/*"
+                                                onchange="document.getElementById('avatar-preview').src = URL.createObjectURL(this.files[0])">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

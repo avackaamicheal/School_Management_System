@@ -21,14 +21,6 @@
                 </div>
             @endif
 
-            @if(session('success'))
-                <div class="alert alert-success no-print">{{ session('success') }}</div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger no-print">{{ session('error') }}</div>
-            @endif
-
             {{-- Search Forms: Admin Only --}}
             @if(Auth::user()->hasRole('SchoolAdmin'))
                 <div class="row no-print">

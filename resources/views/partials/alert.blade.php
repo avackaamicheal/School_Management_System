@@ -1,19 +1,18 @@
-<div class="container-fluid mt-2">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-check"></i> Success!</h5>
-            {{ session('success') }}
-        </div>
-    @endif
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show shadow-sm"
+         style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 450px;">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <i class="icon fas fa-check mr-1"></i> {{ session('success') }}
+    </div>
+@endif
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-ban"></i> Error!</h5>
-            {{ session('error') }}
-        </div>
-    @endif
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm"
+         style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 450px;">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <i class="icon fas fa-ban mr-1"></i> {{ session('error') }}
+    </div>
+@endif
 
-    <div id="ajax-alert-container"></div>
-</div>
+<div id="ajax-alert-container"
+     style="position: fixed; top: 76px; right: 20px; z-index: 9999; min-width: 300px; max-width: 450px;"></div>
