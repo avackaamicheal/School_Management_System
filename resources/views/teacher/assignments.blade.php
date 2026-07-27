@@ -5,8 +5,8 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6"><h1 class="m-0">Class Assignments</h1></div>
-                <div class="col-sm-6">
-                    <a href="{{ route('teachers.index') }}" class="btn btn-secondary float-right">
+                <div class="col-sm-6 text-left text-md-right mt-2">
+                    <a href="{{ route('teachers.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Back to Teachers
                     </a>
                 </div>
@@ -21,7 +21,7 @@
                     <h3 class="card-title">Assign Teachers to Subjects & Classes</h3>
                 </div>
                 <div class="card-body table-responsive p-0">
-                    <table class="table table-hover table-striped">
+                        <table class="table table-hover table-striped text-nowrap">
                         <thead>
                             <tr>
                                 <th style="width: 20%">Teacher</th>
@@ -55,7 +55,7 @@
                                                     method="POST" class="d-inline">
                                                     @csrf @method('DELETE')
                                                     <button type="submit"
-                                                        class="btn btn-xs btn-danger ml-1"
+                                                        class="btn btn-sm btn-danger ml-1"
                                                         onclick="return confirm('Remove this assignment?')">
                                                         <i class="fas fa-times"></i>
                                                     </button>
@@ -69,10 +69,10 @@
                                         <form action="{{ route('teachers.assign', $teacher->id) }}"
                                             method="POST">
                                             @csrf
-                                            <div class="d-flex align-items-start flex-wrap gap-2">
+                                            <div class="d-flex align-items-start flex-wrap" style="gap: 0.5rem;">
 
                                                 {{-- Subject --}}
-                                                <div class="mr-2" style="min-width: 150px;">
+                                                <div class="mr-2" style="min-width: 120px;">
                                                     <label class="text-muted text-sm mb-1">Subject</label>
                                                     <select name="subject_id" class="form-control form-control-sm" required>
                                                         <option value="">-- Subject --</option>
@@ -85,7 +85,7 @@
                                                 </div>
 
                                                 {{-- Class & Section --}}
-                                                <div class="mr-2" style="min-width: 180px;">
+                                                <div class="mr-2" style="min-width: 140px;">
                                                     <label class="text-muted text-sm mb-1">Class & Section</label>
                                                     <select name="section_id" class="form-control form-control-sm" required>
                                                         <option value="">-- Section --</option>
@@ -102,7 +102,7 @@
                                                 </div>
 
                                                 {{-- Save --}}
-                                                <div style="margin-top: 22px;">
+                                                <div class="align-self-end mt-2 mt-md-0">
                                                     <button type="submit" class="btn btn-sm btn-primary">
                                                         <i class="fas fa-plus"></i> Assign
                                                     </button>

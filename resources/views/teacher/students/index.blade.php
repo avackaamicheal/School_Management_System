@@ -216,7 +216,7 @@
                             $maleCount = $students->filter(fn($s) => $s->studentProfile->gender == 'Male')->count();
                             $femaleCount = $students->filter(fn($s) => $s->studentProfile->gender == 'Female')->count();
                         @endphp
-                        <div class="card-footer bg-light d-flex justify-content-between text-sm text-muted">
+                        <div class="card-footer bg-light d-flex justify-content-between text-sm text-muted flex-wrap">
                             <span>
                                 <i class="fas fa-graduation-cap mr-1 text-success"></i>
                                 {{ $withGrades }} / {{ $students->count() }} graded

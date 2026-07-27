@@ -27,8 +27,8 @@
                     <div class="col-md-6">
                         <div class="card card-outline card-primary">
                             <div class="card-body">
-                                <form action="{{ resolveRoute('timetable.index') }}" method="GET" class="d-flex">
-                                    <select name="section_id" class="form-control mr-2" required>
+                                <form action="{{ resolveRoute('timetable.index') }}" method="GET" class="d-flex flex-wrap">
+                                    <select name="section_id" class="form-control mr-2 mb-2 mb-md-0" required>
                                         <option value="">-- Manage Class Timetable --</option>
                                         @foreach($sections as $section)
                                             <option value="{{ $section->id }}"
@@ -46,8 +46,8 @@
                     <div class="col-md-6">
                         <div class="card card-outline card-info">
                             <div class="card-body">
-                                <form action="{{ resolveRoute('timetable.index') }}" method="GET" class="d-flex">
-                                    <select name="teacher_id" class="form-control mr-2" required>
+                                <form action="{{ resolveRoute('timetable.index') }}" method="GET" class="d-flex flex-wrap">
+                                    <select name="teacher_id" class="form-control mr-2 mb-2 mb-md-0" required>
                                         <option value="">-- View Teacher Schedule --</option>
                                         @foreach($teachers as $teacher)
                                             <option value="{{ $teacher->id }}"
@@ -75,7 +75,7 @@
 
                     {{-- Add Slot Form: Admin Only, Section View Only --}}
                     @if($activeFilter === 'section' && Auth::user()->hasRole('SchoolAdmin'))
-                        <div class="col-md-4 no-print">
+                        <div class="col-lg-4 no-print">
                             <div class="card card-info card-outline shadow-sm">
                                 <div class="card-header">
                                     <h3 class="card-title">
@@ -117,14 +117,14 @@
                                             </select>
                                         </div>
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-md-6 col-12">
                                                 <div class="form-group">
                                                     <label>Start Time</label>
                                                     <input type="time" name="start_time"
                                                         class="form-control" required>
                                                 </div>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-md-6 col-12">
                                                 <div class="form-group">
                                                     <label>End Time</label>
                                                     <input type="time" name="end_time"
@@ -144,10 +144,10 @@
                     @endif
 
                     {{-- Timetable Grid --}}
-                    <div class="{{ $activeFilter === 'section' && Auth::user()->hasRole('SchoolAdmin') ? 'col-md-8' : 'col-md-12' }}">
+                    <div class="{{ $activeFilter === 'section' && Auth::user()->hasRole('SchoolAdmin') ? 'col-lg-8' : 'col-md-12' }}">
                         <div class="card shadow-sm printable-area">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h3 class="card-title font-weight-bold">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                                <h3 class="card-title font-weight-bold mb-2 mb-sm-0">
                                     @if($activeFilter === 'section')
                                         Timetable for:
                                         {{ $selectedEntity->classLevel->name }} - {{ $selectedEntity->name }}
@@ -189,8 +189,8 @@
                                                     <div class="d-flex flex-wrap">
                                                         @if(isset($timetableGrid[$day]))
                                                             @foreach($timetableGrid[$day] as $slot)
-                                                                <div class="border rounded p-2 m-1 bg-white shadow-sm"
-                                                                    style="min-width: 160px; border-left: 4px solid #007bff !important;">
+                                                                <div class="timetable-slot border rounded p-2 m-1 bg-white shadow-sm"
+                                                                    style="border-left: 4px solid #007bff !important;">
                                                                     <strong class="d-block text-primary">
                                                                         {{ $slot->subject->name }}
                                                                     </strong>
@@ -257,6 +257,14 @@
 </div>
 
 <style>
+    .timetable-slot {
+        min-width: 160px;
+    }
+    @media (max-width: 575.98px) {
+        .timetable-slot {
+            min-width: 100%;
+        }
+    }
     @media print {
         .no-print, .main-header, .main-sidebar, .card-footer, .alert {
             display: none !important;

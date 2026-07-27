@@ -26,7 +26,7 @@
 
                 {{-- Stats Cards --}}
                 <div class="row">
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box bg-info">
                             <div class="inner">
                                 <h3>{{ $studentCount }}</h3>
@@ -39,7 +39,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box bg-success">
                             <div class="inner">
                                 <h3>{{ $staffCount }}</h3>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box bg-warning">
                             <div class="inner">
                                 <h3>{{ $classCount }}</h3>
@@ -65,7 +65,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box bg-danger">
                             <div class="inner">
                                 <h3>{{ $subjectCount }}</h3>
@@ -90,14 +90,14 @@
                                     Weekly Attendance
                                 </h3>
                                 <div class="card-tools">
-                                    <div class="d-flex align-items-center">
-                                        <span class="mr-3">
+                                    <div class="d-flex align-items-center flex-wrap">
+                                        <span class="mr-3 mb-1">
                                             <i class="fas fa-circle text-success mr-1"></i> Present
                                         </span>
-                                        <span class="mr-3">
+                                        <span class="mr-3 mb-1">
                                             <i class="fas fa-circle text-danger mr-1"></i> Absent
                                         </span>
-                                        <span>
+                                        <span class="mb-1">
                                             <i class="fas fa-circle text-warning mr-1"></i> Late
                                         </span>
                                     </div>
@@ -115,26 +115,26 @@
                                 @endphp
 
                                 {{-- Summary badges --}}
-                                <div class="d-flex justify-content-between mb-3">
-                                    <div class="text-center">
+                                <div class="d-flex justify-content-between mb-3 flex-wrap">
+                                    <div class="text-center px-2 mb-1">
                                         <div class="h4 font-weight-bold text-success mb-0">
                                             {{ collect($attendanceChart['present'])->sum() }}
                                         </div>
                                         <small class="text-muted">Present</small>
                                     </div>
-                                    <div class="text-center">
+                                    <div class="text-center px-2 mb-1">
                                         <div class="h4 font-weight-bold text-danger mb-0">
                                             {{ collect($attendanceChart['absent'])->sum() }}
                                         </div>
                                         <small class="text-muted">Absent</small>
                                     </div>
-                                    <div class="text-center">
+                                    <div class="text-center px-2 mb-1">
                                         <div class="h4 font-weight-bold text-warning mb-0">
                                             {{ collect($attendanceChart['late'])->sum() }}
                                         </div>
                                         <small class="text-muted">Late</small>
                                     </div>
-                                    <div class="text-center">
+                                    <div class="text-center px-2 mb-1">
                                         <div class="h4 font-weight-bold text-primary mb-0">
                                             {{ $attendanceRate }}%
                                         </div>
@@ -161,25 +161,17 @@
                                 </h3>
                             </div>
                             <div class="card-body">
-                                <a href="{{ route('student.create') }}">
-                                    <button class="btn btn-app bg-success">
-                                        <i class="fas fa-user-plus"></i> Add Student
-                                    </button>
+                                <a href="{{ route('student.create') }}" class="btn btn-app bg-success">
+                                    <i class="fas fa-user-plus"></i> Add Student
                                 </a>
-                                <a href="{{ route('admin.announcements.index') }}">
-                                    <button class="btn btn-app bg-info">
-                                        <i class="fas fa-bullhorn"></i> Announcement
-                                    </button>
+                                <a href="{{ route('admin.announcements.index') }}" class="btn btn-app bg-info">
+                                    <i class="fas fa-bullhorn"></i> Announcement
                                 </a>
-                                <a href="{{ route('fees.index') }}">
-                                    <button class="btn btn-app bg-warning">
-                                        <i class="fas fa-file-invoice"></i> Collect Fees
-                                    </button>
+                                <a href="{{ route('fees.index') }}" class="btn btn-app bg-warning">
+                                    <i class="fas fa-file-invoice"></i> Collect Fees
                                 </a>
-                                <a href="{{ route('admin.attendance.index') }}">
-                                    <button class="btn btn-app bg-danger">
-                                        <i class="fas fa-user-check"></i> Attendance
-                                    </button>
+                                <a href="{{ route('admin.attendance.index') }}" class="btn btn-app bg-danger">
+                                    <i class="fas fa-user-check"></i> Attendance
                                 </a>
                             </div>
                         </div>
@@ -248,7 +240,7 @@
         </section>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('attendanceChart').getContext('2d');

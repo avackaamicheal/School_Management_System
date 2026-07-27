@@ -15,8 +15,8 @@ class AcademicSettingsController extends Controller
     public function index()
     {
         // Notice no `where('school_id', ...)`! The trait handles it.
-        $sessions = AcademicSession::latest()->get();
-        $terms = Term::with('academicSession')->latest()->get();
+        $sessions = AcademicSession::latest()->paginate(5);
+        $terms = Term::with('academicSession')->latest()->paginate(4);
 
         return view('academics.settings.index', compact('sessions', 'terms'));
     }

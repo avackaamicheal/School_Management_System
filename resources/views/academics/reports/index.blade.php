@@ -12,33 +12,40 @@
         <div class="container-fluid">
             <div class="card card-default">
                 <div class="card-body">
-                    <form action="{{ resolveRoute('reports.index') }}" method="GET" class="form-inline">
-                        <label class="mr-2">Class Section:</label>
-                        <select name="section_id" class="form-control mr-4" required>
-                            <option value="">-- Choose Class --</option>
-                            @foreach($sections as $section)
-                                <option value="{{ $section->id }}"
-                                    {{ request('section_id') == $section->id ? 'selected' : '' }}>
-                                    {{ $section->classLevel->name }} - {{ $section->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button type="submit" class="btn btn-primary">Load Class</button>
+                    <form action="{{ resolveRoute('reports.index') }}" method="GET" class="row align-items-end">
+                        <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0 mr-sm-3">
+                            <label class="mr-2 d-block d-sm-inline">Class Section:</label>
+                            <select name="section_id" class="form-control" required>
+                                <option value="">-- Choose Class --</option>
+                                @foreach($sections as $section)
+                                    <option value="{{ $section->id }}"
+                                        {{ request('section_id') == $section->id ? 'selected' : '' }}>
+                                        {{ $section->classLevel->name }} - {{ $section->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0">
+                            <button type="submit" class="btn btn-primary">Load Class</button>
+                        </div>
                     </form>
                 </div>
             </div>
 
             @if($selectedSection)
                 <div class="card card-outline card-success">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h3 class="card-title">
-                            Students in: <strong>{{ $selectedSection->name }}</strong>
-                        </h3>
-                        <div class="card-tools">
-                            <a href="{{ resolveRoute('reports.batch', $selectedSection->id) }}"
-                                class="btn btn-success btn-sm font-weight-bold shadow-sm">
-                                <i class="fas fa-file-pdf"></i> Batch Download Class PDF
-                            </a>
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <h3 class="card-title mb-2 mb-sm-0">
+                                Students in: <strong>{{ $selectedSection->name }}</strong>
+                            </h3>
+                            <div class="card-tools">
+                                <a href="{{ resolveRoute('reports.batch', $selectedSection->id) }}"
+                                    class="btn btn-success btn-sm font-weight-bold shadow-sm">
+                                    <span class="d-none d-sm-inline"> Batch Download Reports</span>
+                                    <span class="d-sm-none">Batch PDF</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -117,7 +124,7 @@
                                         <td class="text-right align-middle">
                                             <a href="{{ resolveRoute('reports.single', $student->id) }}"
                                                 class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-file-pdf"></i> Print Card
+                                                Print Card
                                             </a>
                                         </td>
                                     </tr>

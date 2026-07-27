@@ -7,8 +7,8 @@
                 <div class="col-sm-6">
                     <h1 class="m-0">Add New Teacher</h1>
                 </div>
-                <div class="col-sm-6">
-                    <a href="{{ route('teachers.index') }}" class="btn btn-secondary float-right">
+                <div class="col-sm-6 text-left text-md-right mt-2">
+                    <a href="{{ route('teachers.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Back to Teachers
                     </a>
                 </div>
@@ -19,7 +19,13 @@
     <section class="content">
         <div class="container-fluid">
             @if($errors->any())
-                <div class="alert alert-danger">{{ $errors->first() }}</div>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <form action="{{ route('teachers.store') }}" method="POST" enctype="multipart/form-data">
@@ -38,7 +44,7 @@
                                         style="width: 100px; height: 100px; object-fit: cover;"
                                         alt="Profile Picture">
                                     <div class="mt-2">
-                                        <label class="btn btn-sm btn-outline-primary">
+                                        <label class="btn btn-outline-primary">
                                             <i class="fas fa-camera"></i> Upload Photo
                                             <input type="file" name="profile_picture" id="profilePicInput"
                                                 class="d-none" accept="image/*">
@@ -71,21 +77,21 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Phone Number</label>
                                             <input type="text" name="phone" class="form-control"
                                                 value="{{ old('phone') }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Date of Birth</label>
                                             <input type="date" name="date_of_birth" class="form-control"
                                                 value="{{ old('date_of_birth') }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Gender</label>
                                             <select name="gender" class="form-control">
@@ -99,7 +105,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Marital Status</label>
                                             <select name="marital_status" class="form-control">
@@ -130,7 +136,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Qualification</label>
                                             <input type="text" name="qualification" class="form-control"
@@ -138,7 +144,7 @@
                                                 placeholder="e.g. B.Sc, M.Ed">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Hire Date</label>
                                             <input type="date" name="hire_date" class="form-control"
@@ -147,12 +153,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-footer text-right">
-                                <a href="{{ route('teachers.index') }}" class="btn btn-secondary mr-2">
+                            <div class="card-footer text-center text-md-right">
+                                <a href="{{ route('teachers.index') }}" class="btn btn-secondary mb-1 mr-2">
                                     Cancel
                                 </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-user-plus"></i> Add Teacher
+                                <button type="submit" class="btn btn-primary mb-1">
+                                    Create Teacher
                                 </button>
                             </div>
                         </div>

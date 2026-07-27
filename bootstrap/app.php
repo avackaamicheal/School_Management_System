@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Middleware\CheckSchoolApproval;
-use App\Http\Middleware\SetActiveSchool;
 use App\Http\Middleware\SetTenantSchool;
 use Illuminate\Foundation\Application;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -27,7 +26,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
-            'tenant' => SetActiveSchool::class,
             'active' => SetTenantSchool::class,
             'school.approved' => CheckSchoolApproval::class
         ]);

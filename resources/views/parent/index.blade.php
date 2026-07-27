@@ -4,12 +4,12 @@
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+                <div class="col-sm-6 mb-2">
                     <h1 class="m-0">Parents / Guardians</h1>
                 </div>
                 <div class="col-sm-6 text-right">
                     <a href="{{ route('parents.create') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i> Add Parent
+                        <i class="fas fa-plus"></i> Add Parent
                     </a>
                 </div>
             </div>
@@ -18,24 +18,27 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card">
+            <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">
-                        All Parents
-                        @if(request('search'))
-                            <span class="badge badge-info ml-2">{{ $parents->total() }} found</span>
-                        @else
-                            <span class="badge badge-secondary ml-2">{{ $parents->total() }} total</span>
-                        @endif
-                    </h3>
-                    <x-search-filter
-                        :route="route('parents.index')"
-                        placeholder="Search by name, email or phone..."
-                    />
+                    <div class="d-flex justify-content-between align-items-center flex-nowrap">
+                        <h3 class="card-title">
+                            All Parents
+                            @if(request('search'))
+                                <span class="badge badge-info ml-2">{{ $parents->total() }} found</span>
+                            @else
+                                <span class="badge badge-secondary ml-2">{{ $parents->total() }}</span>
+                            @endif
+                        </h3>
+                        <x-search-filter
+                            :route="route('parents.index')"
+                            placeholder="Search by name, email or phone..."
+                        />
+                    </div>
                 </div>
 
                 <div class="card-body p-0">
-                    <table class="table table-hover text-nowrap">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Parent</th>
@@ -69,15 +72,25 @@
                                             <span class="text-muted">No children linked</span>
                                         @endforelse
                                     </td>
-                                    <td class="text-right">
-                                        <a href="{{ route('parents.show', $parent->id) }}"
-                                            class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <a href="{{ route('parents.show', $parent->id) }}"
+                                                class="btn btn-sm btn-info py-1 px-2 mx-1">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                         <a href="{{ route('parents.edit', $parent->id) }}"
-                                            class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i> Edit
+                                            class="btn btn-sm btn-warning mr-1">
+                                            <i class="fas fa-edit"></i>
                                         </a>
+                                        <form action="{{ route('parents.destroy', $parent->id) }}"
+                                            method="POST" class="d-inline">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Delete {{ $parent->name }}? This cannot be undone.')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                     </td>
                                 </tr>
                             @empty
@@ -96,6 +109,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 <div class="card-footer clearfix">

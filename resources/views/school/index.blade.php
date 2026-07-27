@@ -10,7 +10,7 @@
                     <div class="col-sm-6">
                         <h1>School List</h1>
                     </div>
-                    <div class="col-sm-6" style="text-align: right">
+                    <div class="col-sm-6 text-right">
                         <a href="{{ route('school.create') }}" class="btn btn-primary">Add School</a>
                     </div>
                     {{-- <div class="col-sm-6">
@@ -33,6 +33,7 @@
                         <div class="card">
                             <!-- /.card-header -->
                             <div class="card-body p-0">
+                                    <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
@@ -130,6 +131,7 @@
                                     @method('DELETE')
                                     </form> --}}
                                 </table>
+                                    </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
@@ -137,12 +139,9 @@
                     </div>
                     <!-- /.col -->
                 </div>
-
-            </div>
-
-    </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 @endsection

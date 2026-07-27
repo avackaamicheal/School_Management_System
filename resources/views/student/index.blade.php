@@ -9,15 +9,17 @@
                         <h1 class="m-0">Student List</h1>
                     </div>
                     <div class="col-sm-6 text-right">
-                        <button class="btn btn-success" data-toggle="modal" data-target="#modal-import">
-                            <i class="fas fa-file-import"></i> Import CSV
-                        </button>
-                        <a href="{{ route('students.export') }}" class="btn btn-info">
-                            <i class="fas fa-file-download"></i> Export Excel
-                        </a>
-                        <a href="{{ route('student.create') }}" class="btn btn-primary">
-                            <i class="fas fa-user-plus"></i> New Admission
-                        </a>
+                        <div class="d-flex flex-wrap justify-content-sm-end">
+                            <button class="btn btn-success mb-1 mx-1" data-toggle="modal" data-target="#modal-import">
+                                Import Students
+                            </button>
+                            <a href="{{ route('students.export') }}" class="btn btn-info mb-1 mx-1">
+                                Export Students
+                            </a>
+                            <a href="{{ route('student.create') }}" class="btn btn-primary mb-1 mx-1">
+                                <i class="fas fa-plus"></i> New Admission
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -39,25 +41,27 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">
-                            All Registered Students
-                            {{-- Show result count when filtering --}}
-                            @if (request()->hasAny(['search', 'class_id', 'section_id', 'gender']))
-                                <span class="badge badge-info ml-2">
-                                    {{ $students->total() }} found
-                                </span>
-                            @else
-                                <span class="badge badge-secondary ml-2">
-                                    {{ $students->total() }} total
-                                </span>
-                            @endif
-                        </h3>
-
-                        <x-search-filter :route="route('student.index')" placeholder="Search by name/adm no..." />
+                        <div class="d-flex justify-content-between align-items-center flex-nowrap">
+                            <h3 class="card-title mb-2 mb-md-0">
+                                All Students
+                                {{-- Show result count when filtering --}}
+                                @if (request()->hasAny(['search', 'class_id', 'section_id', 'gender']))
+                                    <span class="badge badge-info">
+                                        {{ $students->total() }} found
+                                    </span>
+                                @else
+                                    <span class="badge badge-secondary">
+                                        {{ $students->total() }}
+                                    </span>
+                                @endif
+                            </h3>
+                            <x-search-filter :route="route('student.index')" placeholder="Search by name/adm no..." />
+                        </div>
                     </div>
 
                     <div class="card-body p-0">
-                        <table class="table table-hover text-nowrap">
+                            <div class="table-responsive">
+                                <table class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
                                     <th>Student</th>
@@ -141,6 +145,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                            </div>
                     </div>
 
                     <div class="card-footer clearfix">

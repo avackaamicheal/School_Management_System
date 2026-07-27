@@ -1,4 +1,13 @@
-@extends('layouts.minimal')
+@extends('layouts.auth')
+
+@push('styles')
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+    </style>
+@endpush
+
+@section('body_class', 'hold-transition')
+
 @section('content')
     <div class="container py-5">
         <div class="row justify-content-center mt-5">

@@ -9,7 +9,7 @@
                         <h1 class="m-0">New Student Admission</h1>
                     </div>
                     <div class="col-sm-6">
-                        <a href="{{ route('student.index') }}" class="btn btn-secondary float-right">
+                        <a href="{{ route('student.index') }}" class="btn btn-outline-secondary float-right">
                             <i class="fas fa-arrow-left"></i> Back to Students
                         </a>
                     </div>
@@ -33,12 +33,12 @@
                                 <div class="card-body">
 
                                     <div class="form-group row">
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-12">
                                             <label>First Name <span class="text-danger">*</span></label>
                                             <input type="text" name="first_name" class="form-control"
                                                 placeholder="e.g. John" required>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-12">
                                             <label>Last Name <span class="text-danger">*</span></label>
                                             <input type="text" name="last_name" class="form-control"
                                                 placeholder="e.g. Doe" required>
@@ -70,7 +70,7 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-12">
                                             <label>Class Level <span class="text-danger">*</span></label>
                                             <select name="class_level_id" id="class_select" class="form-control"
                                                 onchange="filterSections()" required>
@@ -83,7 +83,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-12">
                                             <label>Section <span class="text-danger">*</span></label>
                                             <select name="section_id" id="section_select" class="form-control" required>
                                                 <option value="">-- Select Class First --</option>
@@ -92,11 +92,11 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-12">
                                             <label>Date of Birth <span class="text-danger">*</span></label>
                                             <input type="date" name="dob" class="form-control" required>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-12">
                                             <label>Gender <span class="text-danger">*</span></label>
                                             <select name="gender" class="form-control" required>
                                                 <option value="">-- Select --</option>
@@ -165,7 +165,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Address<small class="text-muted">(optional)</small></label>
+                                        <label>Address <small class="text-muted">(optional)</small></label>
                                         <input type="text" name="address" class="form-control"
                                             placeholder="Enter parent address">
                                     </div>

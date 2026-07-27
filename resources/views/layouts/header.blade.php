@@ -6,7 +6,7 @@
         </li>
 
         {{-- Dynamic Home Link based on Role --}}
-        <li class="nav-item d-none d-sm-inline-block">
+        <li class="nav-item d-none d-md-inline-block">
             @role('SuperAdmin')
                 <a href="{{ route('superadmin.dashboard') }}" class="nav-link">SuperAdmin Dashboard</a>
             @endrole
@@ -24,75 +24,56 @@
             @endrole
         </li>
 
+        {{-- Mobile home icon --}}
+        <li class="nav-item d-md-none">
+            @php
+                $mobileDashboardRoute = '';
+                if (auth()->user()->hasRole('SuperAdmin')) $mobileDashboardRoute = 'superadmin.dashboard';
+                elseif (auth()->user()->hasRole('SchoolAdmin')) $mobileDashboardRoute = 'schooladmin.dashboard';
+                elseif (auth()->user()->hasRole('Teacher')) $mobileDashboardRoute = 'teacher.dashboard';
+                elseif (auth()->user()->hasRole('Student')) $mobileDashboardRoute = 'student.dashboard';
+                elseif (auth()->user()->hasRole('Parent')) $mobileDashboardRoute = 'parent.dashboard';
+            @endphp
+            @if ($mobileDashboardRoute)
+                <a href="{{ route($mobileDashboardRoute) }}" class="nav-link"><i class="fas fa-home"></i></a>
+            @endif
+        </li>
+
         {{-- Add inside the navbar ul.navbar-nav --}}
         @hasanyrole('SchoolAdmin')
             @unless(request()->routeIs('subject.*', 'section.*', 'classLevel.*', 'teachers.*', 'student.*', 'parents.*', 'invoices.*', 'search.*'))
-                <li class="nav-item">
-                    <div class="navbar-search-block" style="display: block; position: relative;">
-                        <div class="input-group input-group-sm">
+                <li class="nav-item d-none d-sm-block">
+                    <div class="navbar-search-block" style="display:block;position: relative;">
+                        <div class="input-group input-group-sm" style="position: relative;">
                             <input type="text" id="globalSearchInput" class="form-control"
-                                placeholder="Search students, teachers..." style="width: 250px; border-radius: 20px 0 0 20px;"
-                                autocomplete="off">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-secondary" style="border-radius: 0 20px 20px 0;"
-                                    onclick="submitGlobalSearch()">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
+                                placeholder="Search students, teachers..."
+                                style="border-radius: 20px; padding-right: 38px; min-width: 160px;"
+                                autocomplete="off"
+                                data-search-url="{{ route('search.live') }}"
+                                data-search-index-url="{{ route('search.index') }}">
+                            <button type="button" class="btn btn-sm"
+                                onclick="submitGlobalSearch()"
+                                style="position: absolute; right: 2px; top: 50%; transform: translateY(-50%); border-radius: 50%; border: none; background: transparent; z-index: 5; padding: 4px 8px;">
+                                <i class="fas fa-search text-secondary"></i>
+                            </button>
                         </div>
 
                         {{-- Live dropdown results --}}
-                        <div id="searchDropdown" class="dropdown-menu w-100 shadow-lg"
-                            style="display: none; position: absolute; top: 100%; left: 0; z-index: 9999; min-width: 350px; max-height: 400px; overflow-y: auto;">
+                        <div id="searchDropdown" class="dropdown-menu shadow-lg"
+                            style="display: none; position: absolute; top: 100%; left: 0; z-index: 9999; min-width: 100%; max-width: 90vw; max-height: 400px; overflow-y: auto;">
                         </div>
                     </div>
                 </li>
             @endunless
+                <li class="nav-item d-sm-none">
+                    <a class="nav-link" href="{{ route('search.index') }}" title="Search">
+                        <i class="fas fa-search"></i>
+                    </a>
+                </li>
         @endhasanyrole
     </ul>
 
     <ul class="navbar-nav ml-auto">
-        {{-- Only show this dropdown if the user is the SuperAdmin --}}
-        @role('SuperAdmin')
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    @if (session('active_school'))
-                        <i class="fas fa-school text-warning"></i>
-                        <span class="font-weight-bold text-dark">
-                            {{ \App\Models\School::find(session('active_school'))->name ?? 'School Selected' }}
-                        </span>
-                    @else
-                        <i class="fas fa-globe text-primary"></i> Global View
-                    @endif
-                </a>
-                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-header">Switch Context</span>
-                    <div class="dropdown-divider"></div>
-
-                    {{-- Option: Go Global --}}
-                    <form action="{{ route('school.context') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="school_id" value="">
-                        <button type="submit" class="dropdown-item">
-                            <i class="fas fa-globe mr-2"></i> State Overview
-                        </button>
-                    </form>
-
-                    {{-- Option: List Schools (Limit to 5 for UI, add 'View All' link if needed) --}}
-                    @foreach (\App\Models\School::limit(5)->get() as $school)
-                        <div class="dropdown-divider"></div>
-                        <form action="{{ route('school.context') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="school_id" value="{{ $school->id }}">
-                            <button type="submit" class="dropdown-item">
-                                <i class="fas fa-school mr-2 text-muted"></i> {{ $school->name }}
-                            </button>
-                        </form>
-                    @endforeach
-                </div>
-            </li>
-        @endrole
-
         @auth
             @if (session('active_school'))
                 @php
@@ -116,15 +97,27 @@
                         </span>
                     @endif
                 </li>
+                {{-- Mobile session indicator --}}
+                <li class="nav-item d-md-none mr-2">
+                    @if ($activeSession && $activeTerm)
+                        <span class="badge badge-success p-1" style="border-radius: 50%; width: 26px; height: 26px; line-height: 16px; text-align: center;" title="{{ $activeSession->name }} | {{ $activeTerm->name }}">
+                            <i class="fas fa-calendar-alt" style="font-size: 11px;"></i>
+                        </span>
+                    @else
+                        <span class="badge badge-danger p-1" style="border-radius: 50%; width: 26px; height: 26px; line-height: 16px; text-align: center;" title="No Active Term Setup">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 11px;"></i>
+                        </span>
+                    @endif
+                </li>
             @endif
 
             @role('Teacher')
                 <li class="nav-item dropdown">
-                    <a class="nav-link bg-primary rounded px-3 mr-2 text-white" data-toggle="dropdown" href="#"
-                        style="margin-top: 4px; padding-top: 4px; height: 30px; line-height: 22px;">
-                        <i class="fas fa-plus mr-1"></i> Quick Add
+                    <a class="nav-link bg-primary rounded px-2 px-md-3 mr-2 text-white py-md-1" data-toggle="dropdown" href="#"
+                        style="margin-top: 4px;">
+                        <i class="fas fa-plus mr-md-1"></i><span class="d-none d-md-inline"> Quick Add</span>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                    <div class="dropdown-menu dropdown-menu-right shadow-sm" style="max-width: 90vw;">
                         <span class="dropdown-header">Classroom Actions</span>
                         <div class="dropdown-divider"></div>
 
@@ -146,7 +139,7 @@
                 </li>
             @endrole
 
-            {{-- Replace the entire bell li from here --}}
+
             @auth
                 <li class="nav-item dropdown">
                     @php
@@ -161,7 +154,7 @@
                         @endif
                     </a>
 
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: 90vw;">
                         <span class="dropdown-item dropdown-header">
                             {{ $unreadCount }} Unread Notification{{ $unreadCount != 1 ? 's' : '' }}
                         </span>
@@ -204,7 +197,7 @@
                     </div>
                 </li>
             @endauth
-            {{-- To here --}}
+
         @endauth
 
         @auth
@@ -214,7 +207,7 @@
                         alt="User Image">
                     <span class="d-none d-md-inline">{{ auth()->user()?->name }}</span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: 90vw;">
                     <li class="user-header bg-primary">
                         <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
                             alt="User Image">
@@ -230,8 +223,10 @@
                     <li class="user-footer">
                         @role('Teacher')
                             <a href="{{ route('teacher.profile') }}" class="btn btn-default btn-flat">Profile</a>
-                        @else
+                        @elserole('SchoolAdmin')
                             <a href="{{ route('school.profile') }}" class="btn btn-default btn-flat">Profile</a>
+                        @else
+                            <a href="#" class="btn btn-default btn-flat">Profile</a>
                         @endrole
                         <form action="{{ route('logout') }}" method="POST" class="float-right">
                             @csrf
@@ -250,16 +245,18 @@
         <div class="sidebar">
             <div class="text-center pt-3 pb-2 px-3" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                 @role('SuperAdmin')
-                    <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="Axia SMS"
+                    <img src="{{ asset('dist/img/axia-logo.svg') }}" alt="Axia SMS"
                         style="width: 45px; height: 45px; object-fit: contain; opacity: .8;">
                     <div class="font-weight-bold text-white mt-1" style="font-size: 0.9rem; line-height: 1.2;">
                         Axia SMS
                     </div>
                 @else
-                    <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="School Logo"
+                    @php $school = \App\Models\School::find(session('active_school')); @endphp
+                    <img src="{{ $school?->logo ? asset('storage/' . $school->logo) : asset('dist/img/axia-logo.svg') }}"
+                        alt="School Logo"
                         style="width: 45px; height: 45px; object-fit: contain; opacity: .8;">
                     <div class="font-weight-bold text-white mt-1" style="font-size: 0.9rem; line-height: 1.2; word-break: break-word;">
-                        {{ \App\Models\School::find(session('active_school'))->name ?? 'My School' }}
+                        {{ $school->name ?? 'My School' }}
                     </div>
                 @endrole
                 <div class="text-muted small mt-1" style="font-size: 0.75rem; line-height: 1.2;">
@@ -271,7 +268,7 @@
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                     data-accordion="false">
 
-                    <li class="nav-item menu-open">
+                    <li class="nav-item">
                         @role('SuperAdmin')
                             <a href="{{ route('superadmin.dashboard') }}" class="nav-link @activeRoute('superadmin.dashboard')"><i
                                     class="nav-icon fas fa-tachometer-alt"></i>
@@ -495,13 +492,13 @@
                         @hasanyrole('Student|Parent')
                             {{-- Build student/parent communication routes when needed --}}
                             <li class="nav-item">
-                                <a href="#" class="nav-link">
+                                <a href="#" class="nav-link disabled" tabindex="-1" aria-disabled="true">
                                     <i class="nav-icon fas fa-bullhorn"></i>
                                     <p>Announcements</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link">
+                                <a href="#" class="nav-link disabled" tabindex="-1" aria-disabled="true">
                                     <i class="nav-icon fas fa-envelope"></i>
                                     <p>Messages</p>
                                 </a>
@@ -511,11 +508,11 @@
 
                     @role('SchoolAdmin')
                         <li class="nav-header">SETTINGS</li>
-                        <li class="nav-item"><a href="{{ route('school.profile') }}" class="nav-link"><i
-                                    class="nav-icon fas fa-cogs"></i>
-                                <p>School Profile</p>
-                            </a>
-                        </li>
+                        <li class="nav-item"><a href="{{ route('school.profile') }}" class="nav-link @activeRoute('school.profile')"><i
+                                     class="nav-icon fas fa-cogs"></i>
+                                 <p>School Profile</p>
+                             </a>
+                         </li>
 
                         <li class="nav-item">
                             <a href="{{ route('search.index') }}" class="nav-link @activeRoute('search.*')">

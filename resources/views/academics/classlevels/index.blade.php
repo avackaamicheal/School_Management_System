@@ -6,9 +6,9 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Class Levels / Grades</h1>
+                        <h1 class="mb-2">Class Levels Managenent</h1>
                     </div>
-                    <div class="col-sm-6 text-right">
+                    <div class="col-sm-6 text-sm-right">
                         <button class="btn btn-primary" onclick="openCreateModal()">
                             <i class="fas fa-plus"></i> Add New Class
                         </button>
@@ -19,30 +19,32 @@
 
         <section class="content">
             <div class="container-fluid">
-                <div class="card">
+                <div class="card card-outline card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">
-                            All Classes
-                            @if (request('search'))
-                                <span class="badge badge-info ml-2">{{ $classLevels->total() }} found</span>
-                            @else
-                                <span class="badge badge-secondary ml-2">{{ $classLevels->total() }} total</span>
-                            @endif
-                        </h3>
-
-                        <x-search-filter :route="route('classLevel.index')" placeholder="Search class name..." />
+                        <div class="d-flex align-items-center justify-content-between flex- nowrap">
+                            <h3 class="card-title mb-2 mb-sm-0 mr-2">
+                                All Classes
+                                @if (request('search'))
+                                    <span class="badge badge-info ml-2">{{ $classLevels->total() }} found</span>
+                                @else
+                                    <span class="badge badge-secondary ml-2">{{ $classLevels->total() }} total</span>
+                                @endif
+                            </h3>
+                            <x-search-filter :route="route('classLevel.index')" placeholder="Search class name..." />
+                        </div>
 
                     </div>
 
                     <div class="card-body p-0">
-                        <table class="table table-striped projects">
+                            <div class="table-responsive">
+                                <table class="table table-striped projects">
                             <thead>
                                 <tr>
                                     <th style="width: 20%">Class Name</th>
                                     <th>Description</th>
                                     <th>Sections</th>
                                     <th>Status</th>
-                                    <th style="width: 20%">Actions</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,19 +67,20 @@
                                             @endif
                                         </td>
                                         <td class="project-actions">
-                                            <button class="btn btn-info btn-sm"
-                                                onclick="openEditModal(
-                                                {{ $class->id }},
-                                                '{{ $class->name }}',
-                                                '{{ $class->description }}'
-                                            )">
-                                                <i class="fas fa-pencil-alt"></i> Edit
-                                            </button>
-
-                                            <button class="btn btn-danger btn-sm"
-                                                onclick="handleDelete({{ $class->id }})">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
+                                            <div class="d-flex align-items-center" style="gap: 0.25rem;">
+                                                <button class="btn btn-info btn-sm mr-1"
+                                                    onclick="openEditModal(
+                                                    {{ $class->id }},
+                                                    '{{ $class->name }}',
+                                                    '{{ $class->description }}'
+                                                )">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm"
+                                                    onclick="handleDelete({{ $class->id }})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
                                             <form id="delete-form-{{ $class->id }}"
                                                 action="{{ route('classLevel.destroy', $class->id) }}" method="POST"
                                                 style="display:inline;">
@@ -102,6 +105,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                            </div>
                     </div>
 
                     <div class="card-footer clearfix">
@@ -113,7 +117,7 @@
     </div>
 
     <div class="modal fade" id="modal-class">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="modal-title">Add New Class</h4>

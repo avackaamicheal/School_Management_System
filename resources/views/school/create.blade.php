@@ -49,35 +49,35 @@
                     <label for="name">School Name <span class="required">*</span></label>
                     <input type="text" class="form-control" name="name" id="name" placeholder="Enter School Name" value="{{ old('name') }}">
                     @error('name')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        <p class="text-danger small mt-2">{{ $message }}</p>
                     @enderror
                   </div>
                   <div class="form-group">
                     <label for="email">Email <span class="required">*</span></label>
                     <input type="email" class="form-control" name="email" id="email" placeholder="Enter School Email" value="{{ old('email') }}">
                     @error('email')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        <p class="text-danger small mt-2">{{ $message }}</p>
                     @enderror
                   </div>
                   <div class="form-group">
                     <label for="address">Address <span class="required">*</span></label>
                     <input type="text" class="form-control" name="address" id="address" placeholder="Enter School Address" value="{{ old('address') }}">
                     @error('address')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        <p class="text-danger small mt-2">{{ $message }}</p>
                     @enderror
                   </div>
                   <div class="form-group">
                     <label for="principal_name">Principal Name <span class="required">*</span></label>
                     <input type="text" class="form-control" name="principal_name" id="principal_name" placeholder="Enter Principal Name" value="{{ old('principal_name') }}">
                     @error('principal_name')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        <p class="text-danger small mt-2">{{ $message }}</p>
                     @enderror
                   </div>
                   <div class="form-group">
                     <label for="phonenumber">Phone Number <span class="required">*</span></label>
                     <input type="phone_number" class="form-control" name="phone_number" id="phonenumber" placeholder="Enter School Phone Number" value="{{ old('phone_number') }}">
                     @error('phone_number')
-                        <p class="mt-2 text-sm text-red-200">{{ $message }}</p>
+                        <p class="text-danger small mt-2">{{ $message }}</p>
                     @enderror
                   </div>
                 </div>

@@ -59,7 +59,7 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <div class="direct-chat-messages" style="height: 500px;">
+                                    <div class="direct-chat-messages" style="height: 60vh; max-height: 500px; min-height: 250px;">
                                         @foreach ($activeThread->messages as $msg)
                                             @php $isMe = $msg->sender_id === auth()->id(); @endphp
 
@@ -73,7 +73,7 @@
                                                 <img class="direct-chat-img"
                                                     src="{{ asset('dist/img/user2-160x160.jpg') }}" alt="User">
 
-                                                <div class="direct-chat-text">
+                                                <div class="direct-chat-text" style="word-break: break-word;">
                                                     {{ $msg->body }}
 
                                                     @if ($msg->attachment_path)
@@ -103,7 +103,7 @@
                                                     <input type="file" name="attachment" class="d-none">
                                                 </label>
                                                 <button type="submit" class="btn btn-primary"><i
-                                                        class="fas fa-paper-plane"></i> Send</button>
+                                                        class="fas fa-paper-plane"></i> <span class="d-none d-sm-inline">Send</span></button>
                                             </span>
                                         </div>
                                     </form>

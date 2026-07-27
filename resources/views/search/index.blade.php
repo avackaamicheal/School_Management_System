@@ -24,7 +24,7 @@
                     <form action="{{ route('search.index') }}" method="GET">
                         <div class="row">
                             {{-- Search Input --}}
-                            <div class="col-md-2">
+                            <div class="col-12 col-md-6 col-lg-2">
                                 <div class="input-group">
                                     <input type="text" name="q" class="form-control"
                                         placeholder="Search..."
@@ -38,7 +38,7 @@
                             </div>
 
                             {{-- Type Filter --}}
-                            <div class="col-md-2">
+                            <div class="col-12 col-md-6 col-lg-2">
                                 <select name="type" class="form-control">
                                     <option value="all" {{ $type == 'all' ? 'selected' : '' }}>
                                         All Types
@@ -59,7 +59,7 @@
                             </div>
 
                             {{-- Class Filter --}}
-                            <div class="col-md-2">
+                            <div class="col-12 col-md-4 col-lg-2">
                                 <select name="class_id" class="form-control"
                                     onchange="this.form.submit()">
                                     <option value="">Classes</option>
@@ -73,7 +73,7 @@
                             </div>
 
                             {{-- Section Filter --}}
-                            <div class="col-md-2">
+                            <div class="col-12 col-md-4 col-lg-2">
                                 <select name="section_id" class="form-control">
                                     <option value="">Sections</option>
                                     @foreach($sections as $section)
@@ -86,7 +86,7 @@
                             </div>
 
                             {{-- Gender Filter --}}
-                            <div class="col-md-2">
+                            <div class="col-12 col-md-4 col-lg-2">
                                 <select name="gender" class="form-control">
                                     <option value="">Gender</option>
                                     <option value="Male" {{ $gender == 'Male' ? 'selected' : '' }}>
@@ -99,7 +99,7 @@
                             </div>
 
                             {{-- Status Filter --}}
-                            <div class="col-md-2">
+                            <div class="col-12 col-md-4 col-lg-2">
                                 <select name="status" class="form-control">
                                     <option value="">Status</option>
                                     <option value="PAID" {{ $status == 'PAID' ? 'selected' : '' }}>
@@ -280,8 +280,8 @@
                                         <th>Invoice #</th>
                                         <th>Student</th>
                                         <th>Total</th>
-                                        <th>Paid</th>
-                                        <th>Balance</th>
+                                        <th class="d-none d-md-table-cell">Paid</th>
+                                        <th class="d-none d-md-table-cell">Balance</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -301,10 +301,10 @@
                                             <td class="align-middle">
                                                 ₦{{ number_format($invoice->total_amount) }}
                                             </td>
-                                            <td class="align-middle text-success">
+                                            <td class="align-middle text-success d-none d-md-table-cell">
                                                 ₦{{ number_format($paid) }}
                                             </td>
-                                            <td class="align-middle text-danger">
+                                            <td class="align-middle text-danger d-none d-md-table-cell">
                                                 ₦{{ number_format($balance) }}
                                             </td>
                                             <td class="align-middle">

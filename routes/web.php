@@ -57,12 +57,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // SuperAdmin routes (no school prefix)
-Route::middleware(['auth', 'role:SuperAdmin', 'tenant'])
+Route::middleware(['auth', 'role:SuperAdmin'])
     ->prefix('superadmin')
     ->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
         Route::resource('school', SchoolController::class);
-        Route::post('/school-context', SchoolContextController::class)->name('school.context');
         Route::post('/school/{school}/approve', [SchoolController::class, 'approve'])->name('school.approve');
         Route::post('/school/{school}/reject', [SchoolController::class, 'reject'])->name('school.reject');
         // School Admins
@@ -147,6 +146,7 @@ Route::middleware(['auth', 'active'])
             Route::get('/parents/{parent}', [ParentController::class, 'show'])->name('parents.show');
             Route::get('/parents/{parent}/edit', [ParentController::class, 'edit'])->name('parents.edit');
             Route::put('/parents/{parent}', [ParentController::class, 'update'])->name('parents.update');
+            Route::delete('/parents/{parent}', [ParentController::class, 'destroy'])->name('parents.destroy');
             Route::post('/parents/{parent}/link-child', [ParentController::class, 'linkChild'])->name('parents.link-child');
             Route::delete('/parents/{parent}/unlink-child/{student}', [ParentController::class, 'unlinkChild'])->name('parents.unlink-child');
 

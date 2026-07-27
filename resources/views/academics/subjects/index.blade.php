@@ -19,13 +19,23 @@
 
         <section class="content">
             <div class="container-fluid">
-                <div class="card">
+                <div class="card card-outline card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">List of Subjects</h3>
-                        <x-search-filter :route="route('subject.index')" placeholder="Search subjects..."/>
+                        <div class="d-flex justify-content-between align-items-center flex-nowrap">
+                            <h3 class="card-title mb-2 mb-sm-0 mr-2">
+                                All Subjects
+                                @if(request('search'))
+                                    <span class="badge badge-info ml-2">{{ $subjects->total() }} found</span>
+                                @else
+                                    <span class="badge badge-secondary ml-2">{{ $subjects->total() }}</span>
+                                @endif
+                            </h3>
+                            <x-search-filter :route="route('subject.index')" placeholder="Search subjects..."/>
+                        </div>
                     </div>
                     <div class="card-body p-0">
-                        <table class="table table-striped">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Subject Name</th>
@@ -40,20 +50,21 @@
                                         <td>{{ $subject->name }}</td>
                                         <td><span class="badge badge-info">{{ $subject->code }}</span></td>
                                         <td>{{ $subject->description }}</td>
-                                        <td>
-                                            <button class="btn btn-info btn-sm"
-                                                onclick="openEditModal(
-                                            {{ $subject->id }},
-                                            '{{ $subject->name }}',
-                                            '{{ $subject->code }}',
-                                            '{{ $subject->description }}')">
-                                                <i class="fas fa-pen"></i> Edit
-                                            </button>
-
-                                            <button class="btn btn-danger btn-sm"
-                                                onclick="handleDelete({{ $subject->id }})">
-                                                <i class="fas fa-trash"></i> Delete
-                                            </button>
+                                        <td class="project-actions">
+                                            <div class="d-flex align-items-center" style="gap: 0.25rem;">
+                                                <button class="btn btn-info btn-sm py-1 px-2"
+                                                    onclick="openEditModal(
+                                                {{ $subject->id }},
+                                                '{{ $subject->name }}',
+                                                '{{ $subject->code }}',
+                                                '{{ $subject->description }}')">
+                                                    <i class="fas fa-pen"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm py-1 px-2"
+                                                    onclick="handleDelete({{ $subject->id }})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
 
                                             <form id="delete-form-{{ $subject->id }}" action="{{ route('subject.destroy', $subject->id) }}" method="POST"
                                                 style="display:inline;">
@@ -63,7 +74,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-4 text-muted">
+                                        <td colspan="4" class="text-center py-4 text-muted">
                                             @if(request('search'))
                                                 <i class="fas fa-search fa-2x mb-2"></i><br>
                                                 No subject found matching "{{ request('search') }}".
@@ -77,6 +88,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -84,7 +96,7 @@
     </div>
 
     <div class="modal fade" id="modal-subject">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <form id="subject-form" onsubmit="handleFormSubmit(event)">
                     @csrf

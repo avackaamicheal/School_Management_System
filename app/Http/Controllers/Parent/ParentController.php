@@ -150,6 +150,16 @@ class ParentController extends Controller
         return back()->with('success', 'Child linked successfully!');
     }
 
+    public function destroy(School $school, User $parent)
+    {
+        $parent->children()->detach();
+        $parent->parentProfile()->delete();
+        $parent->delete();
+
+        return redirect()->route('parents.index')
+            ->with('success', 'Parent deleted successfully.');
+    }
+
     public function unlinkChild(School $school, User $parent, User $student)
     {
         $parent->children()->detach($student->id);

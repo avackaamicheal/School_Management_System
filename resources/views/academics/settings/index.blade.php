@@ -36,7 +36,7 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Save Session</button>
+                                <button type="submit" class="btn btn-primary btn-block">Save Session</button>
                             </div>
                         </form>
                     </div>
@@ -48,7 +48,7 @@
                             <h3 class="card-title">Session List</h3>
                         </div>
                         <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -58,36 +58,41 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($sessions as $session)
-                                    <tr>
-                                        <td><strong>{{ $session->name }}</strong></td>
-                                        <td>{{ \Carbon\Carbon::parse($session->start_date)->format('M Y') }} - {{
-                                            \Carbon\Carbon::parse($session->end_date)->format('M Y') }}</td>
-                                        <td>
-                                            @if($session->is_active)
-                                            <span class="badge badge-success">Active</span>
-                                            @else
-                                            <span class="badge badge-secondary">Inactive</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if(!$session->is_active)
-                                            <form action="{{ route('academic-sessions.activate', $session->id) }}"
-                                                method="POST">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-success">Set
-                                                    Active</button>
-                                            </form>
-                                            @else
-                                            <button class="btn btn-sm btn-success" disabled><i class="fas fa-check"></i>
-                                                Current</button>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+@forelse($sessions as $session)
+                                     <tr>
+                                         <td><strong>{{ $session->name }}</strong></td>
+                                         <td>{{ \Carbon\Carbon::parse($session->start_date)->format('M Y') }} - {{
+                                             \Carbon\Carbon::parse($session->end_date)->format('M Y') }}</td>
+                                         <td>
+                                             @if($session->is_active)
+                                             <span class="badge badge-success">Active</span>
+                                             @else
+                                             <span class="badge badge-secondary">Inactive</span>
+                                             @endif
+                                         </td>
+                                         <td>
+                                             @if(!$session->is_active)
+                                             <form action="{{ route('academic-sessions.activate', $session->id) }}"
+                                                 method="POST" class="d-inline">
+                                                 @csrf
+                                                 <button type="submit" class="btn btn-sm btn-outline-success">Set
+                                                     Active</button>
+                                             </form>
+                                             @else
+                                             <button class="btn btn-sm btn-success" disabled><i class="fas fa-check"></i>
+                                                 Current</button>
+                                             @endif
+                                         </td>
+                                     </tr>
+                                     @empty
+                                     <tr>
+                                         <td colspan="4" class="text-center text-muted">No sessions yet.</td>
+                                     </tr>
+                                     @endforelse
+                                 </tbody>
+                             </table>
+                             <div class="p-2">{{ $sessions->links('pagination::bootstrap-4') }}</div>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -119,7 +124,7 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-info">Save Term</button>
+                                <button type="submit" class="btn btn-info btn-block">Save Term</button>
                             </div>
                         </form>
                     </div>
@@ -131,7 +136,7 @@
                             <h3 class="card-title">Terms List</h3>
                         </div>
                         <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>Term</th>
@@ -141,34 +146,39 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($terms as $term)
-                                    <tr>
-                                        <td><strong>{{ $term->name }}</strong></td>
-                                        <td>{{ $term->academicSession->name ?? 'N/A' }}</td>
-                                        <td>
-                                            @if($term->is_active)
-                                            <span class="badge badge-success">Active</span>
-                                            @else
-                                            <span class="badge badge-secondary">Inactive</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if(!$term->is_active)
-                                            <form action="{{ route('terms.activate', $term->id) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-info">Set
-                                                    Active</button>
-                                            </form>
-                                            @else
-                                            <button class="btn btn-sm btn-info" disabled><i class="fas fa-check"></i>
-                                                Current</button>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+@forelse($terms as $term)
+                                     <tr>
+                                         <td><strong>{{ $term->name }}</strong></td>
+                                         <td>{{ $term->academicSession->name ?? 'N/A' }}</td>
+                                         <td>
+                                             @if($term->is_active)
+                                             <span class="badge badge-success">Active</span>
+                                             @else
+                                             <span class="badge badge-secondary">Inactive</span>
+                                             @endif
+                                         </td>
+                                         <td>
+                                             @if(!$term->is_active)
+                                             <form action="{{ route('terms.activate', $term->id) }}" method="POST" class="d-inline">
+                                                 @csrf
+                                                 <button type="submit" class="btn btn-sm btn-outline-info">Set
+                                                     Active</button>
+                                             </form>
+                                             @else
+                                             <button class="btn btn-sm btn-info" disabled><i class="fas fa-check"></i>
+                                                 Current</button>
+                                             @endif
+                                         </td>
+                                     </tr>
+                                     @empty
+                                     <tr>
+                                         <td colspan="4" class="text-center text-muted">No terms yet.</td>
+                                     </tr>
+                                     @endforelse
+                                 </tbody>
+                             </table>
+                             <div class="p-2">{{ $terms->links('pagination::bootstrap-4') }}</div>
+                         </div>
                     </div>
                 </div>
             </div>

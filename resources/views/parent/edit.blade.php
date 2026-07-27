@@ -8,7 +8,7 @@
                         <h1 class="m-0">Edit Parent</h1>
                     </div>
                     <div class="col-sm-6 text-right">
-                        <a href="{{ route('parents.show', $parent->id) }}" class="btn btn-secondary">
+                        <a href="{{ route('parents.show', $parent->id) }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left"></i> Back
                         </a>
                     </div>
@@ -63,9 +63,9 @@
                                         <textarea name="address" class="form-control" rows="2">{{ old('address', $parent->parentProfile->address ?? '') }}</textarea>
                                     </div>
                                 </div>
-                                <div class="card-footer text-right">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save"></i> Save Changes
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        Save Changes
                                     </button>
                                 </div>
                             </div>

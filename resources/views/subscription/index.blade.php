@@ -1,4 +1,12 @@
-@extends('layouts.minimal')
+@extends('layouts.auth')
+
+@push('styles')
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+    </style>
+@endpush
+
+@section('body_class', 'hold-transition')
 
 @section('content')
 <div class="container py-5">
@@ -46,7 +54,7 @@
                 $isCurrentPlan = $currentSubscription?->plan_id === $plan->id && $currentSubscription->isActive();
                 $exceedsLimit  = $studentCount > $plan->max_students && $plan->max_students < 999999;
             @endphp
-            <div class="col-md-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-3 mb-4">
                 <div class="card shadow {{ $isCurrentPlan ? 'border-success' : 'border-0' }}"
                     style="border-radius: 12px; {{ $isCurrentPlan ? 'border: 2px solid #28a745 !important;' : '' }}">
 

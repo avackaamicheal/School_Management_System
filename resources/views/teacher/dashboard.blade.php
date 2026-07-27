@@ -22,7 +22,7 @@
 
                 {{-- AT A GLANCE STATS --}}
                 <div class="row">
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box bg-info">
                             <div class="inner">
                                 <h3>{{ $totalStudents }}</h3>
@@ -35,7 +35,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box bg-success">
                             <div class="inner">
                                 <h3>{{ $totalClasses }}</h3>
@@ -48,7 +48,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box {{ $pendingGrades > 0 ? 'bg-warning' : 'bg-success' }}">
                             <div class="inner">
                                 <h3>{{ $pendingGrades > 0 ? $pendingGrades : 'All Done' }}</h3>
@@ -61,7 +61,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-12 col-sm-6 col-lg-3">
                         <div class="small-box {{ $attendanceRate >= 75 ? 'bg-success' : 'bg-danger' }}">
                             <div class="inner">
                                 <h3>{{ $attendanceRate }}%</h3>
@@ -190,8 +190,8 @@
                                                     <td class="align-middle">
                                                         {{ $allocation->section->name }}
                                                     </td>
-                                                    <td class="align-middle" style="min-width: 150px;">
-                                                        <div class="progress" style="height: 8px;">
+                                                    <td class="align-middle">
+                                                        <div class="progress" style="height: 8px; min-width: 80px;">
                                                             <div class="progress-bar bg-{{ $rateClass }}"
                                                                 style="width: {{ $rate }}%"></div>
                                                         </div>

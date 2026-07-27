@@ -13,9 +13,9 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ resolveRoute('assessments.index') }}" method="GET" class="form-inline">
-                            <label class="mr-3">Select Subject:</label>
-                            <select name="subject_id" class="form-control mr-3" required>
+                        <form action="{{ resolveRoute('assessments.index') }}" method="GET" class="d-flex flex-column flex-md-row align-items-md-center">
+                            <label class="mr-3 mb-2 mb-md-0">Select Subject:</label>
+                            <select name="subject_id" class="form-control mr-3 mb-2 mb-md-0" style="max-width:300px;" required>
                                 <option value="">-- Choose Subject --</option>
                                 @foreach ($subjects as $subject)
                                     <option value="{{ $subject->id }}"
@@ -40,12 +40,13 @@
                             <input type="hidden" name="subject_id" value="{{ $selectedSubject->id }}">
 
                             <div class="card-body">
+                                    <div class="table-responsive">
                                 <table class="table table-bordered" id="dynamicTable">
                                     <thead>
                                         <tr>
-                                            <th>Assessment Category Name (e.g., Homework, Final Exam)</th>
-                                            <th style="width: 200px;">Weight (%)</th>
-                                            <th style="width: 100px;">Action</th>
+                                            <th class="w-50">Assessment Category Name (e.g., Homework, Final Exam)</th>
+                                            <th class="w-25">Weight (%)</th>
+                                            <th class="w-25">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -75,15 +76,16 @@
                                             <td class="text-right font-weight-bold">Total Weight:</td>
                                             <td class="font-weight-bold"><span id="totalWeightDisplay">0</span>%</td>
                                             <td><button type="button" name="add" id="add"
-                                                    class="btn btn-success"><i class="fas fa-plus"></i> Add</button></td>
+                                                    class="btn btn-success"> Add</button></td>
                                         </tr>
                                     </tfoot>
                                 </table>
+                                    </div>
                                 <small class="text-muted"><i class="fas fa-info-circle"></i> The total weight must sum to
                                     exactly 100% before you can save.</small>
                             </div>
                             <div class="card-footer text-right">
-                                <button type="submit" class="btn btn-primary">Save Configuration</button>
+                                <button type="submit" class="btn btn-primary d-block d-sm-inline-block">Save Configuration</button>
                             </div>
                         </form>
                     </div>

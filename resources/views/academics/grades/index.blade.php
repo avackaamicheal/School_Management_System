@@ -16,30 +16,36 @@
 
                 <div class="card card-default">
                     <div class="card-body">
-                        <form action="{{ resolveRoute('grades.index') }}" method="GET" class="form-inline">
-                            <label class="mr-2">Class Section:</label>
-                            <select name="section_id" class="form-control mr-4" required>
-                                <option value="">-- Choose Class --</option>
-                                @foreach ($sections as $section)
-                                    <option value="{{ $section->id }}"
-                                        {{ request('section_id') == $section->id ? 'selected' : '' }}>
-                                        {{ $section->classLevel->name }} - {{ $section->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <form action="{{ resolveRoute('grades.index') }}" method="GET" class="row align-items-end">
+                            <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0 mr-sm-3">
+                                <label class="mr-2 d-block d-sm-inline">Class Section:</label>
+                                <select name="section_id" class="form-control" required>
+                                    <option value="">-- Choose Class --</option>
+                                    @foreach ($sections as $section)
+                                        <option value="{{ $section->id }}"
+                                            {{ request('section_id') == $section->id ? 'selected' : '' }}>
+                                            {{ $section->classLevel->name }} - {{ $section->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                            <label class="mr-2">Subject:</label>
-                            <select name="subject_id" class="form-control mr-4" required>
-                                <option value="">-- Choose Subject --</option>
-                                @foreach ($subjects as $subject)
-                                    <option value="{{ $subject->id }}"
-                                        {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
-                                        {{ $subject->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0 mr-sm-3">
+                                <label class="mr-2 d-block d-sm-inline">Subject:</label>
+                                <select name="subject_id" class="form-control" required>
+                                    <option value="">-- Choose Subject --</option>
+                                    @foreach ($subjects as $subject)
+                                        <option value="{{ $subject->id }}"
+                                            {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
+                                            {{ $subject->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                            <button type="submit" class="btn btn-primary">Load Gradebook</button>
+                            <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0">
+                                <button type="submit" class="btn btn-primary">Load Gradebook</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -65,15 +71,15 @@
                                 <table class="table table-hover table-bordered table-striped m-0" id="gradebookTable">
                                     <thead class="bg-light">
                                         <tr>
-                                            <th style="width: 5%">#</th>
-                                            <th style="width: 25%">Student Name</th>
+                                            <th>#</th>
+                                            <th>Student Name</th>
                                             @foreach ($weights as $weight)
-                                                <th class="text-center">
+                                                <th class="text-center text-nowrap">
                                                     {{ $weight->name }} <br>
                                                     <small class="text-muted">(Max: {{ $weight->weight }})</small>
                                                 </th>
                                             @endforeach
-                                            <th style="width: 10%" class="text-center bg-dark text-white">Total (100)</th>
+                                            <th class="text-center bg-dark text-white text-nowrap">Total (100)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -114,13 +120,13 @@
                             </div>
 
                             @if (!$isLocked && $students->count() > 0)
-                                <div class="card-footer bg-light d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-outline-primary mr-2">
-                                        <i class="fas fa-save"></i> Save Draft
+                                <div class="card-footer bg-light d-flex flex-column flex-sm-row justify-content-end">
+                                    <button type="submit" class="btn btn-outline-primary mb-2 mb-sm-0 mr-sm-2">
+                                        Save Draft
                                     </button>
                                     <button type="submit" name="publish_grades" value="1" class="btn btn-success"
                                         onclick="return confirm('Are you sure? Publishing will lock these grades and they cannot be edited.')">
-                                        <i class="fas fa-lock"></i> Publish & Lock Grades
+                                        Publish & Lock Grades
                                     </button>
                                 </div>
                             @endif
@@ -131,6 +137,13 @@
             </div>
         </section>
     </div>
+
+    <style>
+        .score-input {
+            min-width: 72px;
+            min-height: 38px;
+        }
+    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

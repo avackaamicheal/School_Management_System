@@ -17,9 +17,10 @@
 
     <section class="content">
         <div class="container-fluid">
-            <div class="card">
+            <div class="card card-outline card-primary">
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Teacher</th>
@@ -52,6 +53,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                        </div>
                 </div>
             </div>
         </div>

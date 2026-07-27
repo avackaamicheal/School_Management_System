@@ -15,7 +15,7 @@
 
                 <div class="row">
                     @foreach($presets as $key => $preset)
-                        <div class="col-md-3 mb-3">
+                        <div class="col-12 col-sm-6 col-md-3 mb-3">
                             <label class="card h-100 shadow-sm preset-card" style="cursor: pointer; border-radius: 12px;">
                                 <input type="radio" name="preset" value="{{ $key }}"
                                     class="d-none preset-radio" required>
@@ -30,7 +30,7 @@
                         </div>
                     @endforeach
 
-                    <div class="col-md-3 mb-3">
+                    <div class="col-12 col-sm-6 col-md-3 mb-3">
                         <label class="card h-100 shadow-sm preset-card" style="cursor: pointer; border-radius: 12px;">
                             <input type="radio" name="preset" value="scratch"
                                 class="d-none preset-radio" required>

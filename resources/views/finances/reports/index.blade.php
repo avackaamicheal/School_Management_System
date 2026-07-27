@@ -3,10 +3,10 @@
 @section('content')
     <div class="content-wrapper">
         <div class="content-header">
-            <div class="container-fluid d-flex justify-content-between align-items-center">
-                <h1 class="m-0">Financial Summary: <strong>{{ $activeTerm->name ?? 'No Active Term' }}</strong></h1>
+            <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="m-0 mb-2 text-truncate">Financial Summary: <strong>{{ $activeTerm->name ?? 'No Active Term' }}</strong></h1>
                 <a href="{{ route('finance.reports.export') }}" class="btn btn-success font-weight-bold shadow-sm">
-                    <i class="fas fa-file-excel"></i> Export to Excel
+                    Export to Excel
                 </a>
             </div>
         </div>
@@ -15,30 +15,30 @@
             <div class="container-fluid">
 
                 <div class="row">
-                    <div class="col-lg-4 col-6">
+                    <div class="col-12 col-sm-6 col-lg-4">
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3>${{ Number::currency($totalExpected, 'NGN') }}</h3>
+                                <h3 class="text-truncate" title="${{ Number::currency($totalExpected, 'NGN') }}">${{ Number::currency($totalExpected, 'NGN') }}</h3>
                                 <p>Total Expected Revenue</p>
                             </div>
                             <div class="icon"><i class="fas fa-file-invoice"></i></div>
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-6">
+                    <div class="col-12 col-sm-6 col-lg-4">
                         <div class="small-box bg-success">
                             <div class="inner">
-                                <h3>${{ Number::currency($totalCollected, 'NGN') }}</h3>
+                                <h3 class="text-truncate" title="${{ Number::currency($totalCollected, 'NGN') }}">${{ Number::currency($totalCollected, 'NGN') }}</h3>
                                 <p>Total Collected</p>
                             </div>
                             <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-6">
+                    <div class="col-12 col-sm-6 col-lg-4">
                         <div class="small-box bg-danger">
                             <div class="inner">
-                                <h3>{{ Number::currency($totalOutstanding, 'NGN') }}</h3>
+                                <h3 class="text-truncate" title="{{ Number::currency($totalOutstanding, 'NGN') }}">{{ Number::currency($totalOutstanding, 'NGN') }}</h3>
                                 <p>Total Outstanding Balance</p>
                             </div>
                             <div class="icon"><i class="fas fa-exclamation-circle"></i></div>

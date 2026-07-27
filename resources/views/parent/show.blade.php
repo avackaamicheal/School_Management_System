@@ -7,13 +7,15 @@
                     <div class="col-sm-6">
                         <h1 class="m-0">Parent Profile</h1>
                     </div>
-                    <div class="col-sm-6 text-right">
-                        <a href="{{ route('parents.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Parents
-                        </a>
-                        <a href="{{ route('parents.edit', $parent->id) }}" class="btn btn-warning">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
+                    <div class="col-sm-6 text-sm-right">
+                        <div class="d-flex justify-content-sm-end flex-wrap">
+                            <a href="{{ route('parents.index') }}" class="btn btn-sm btn-outline-secondary mb-1">
+                                <i class="fas fa-arrow-left"></i> Back to Parents
+                            </a>
+                            <a href="{{ route('parents.edit', $parent->id) }}" class="btn btn-sm btn-warning mb-1 ml-1 ml-sm-2">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

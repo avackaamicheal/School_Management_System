@@ -4,16 +4,16 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 mb-2">
                         <h1 class="m-0">Teacher Directory</h1>
                     </div>
                     <div class="col-sm-6">
-                        <div class="float-right">
-                            <a href="{{ route('teachers.assignments') }}" class="btn btn-info mr-2">
-                                <i class="fas fa-chalkboard"></i> Manage Assignments
+                        <div class="d-flex flex-wrap justify-content-sm-end">
+                            <a href="{{ route('teachers.assignments') }}" class="btn btn-success mr-1 mr-sm-2 mb-1">
+                                Assign to subjects
                             </a>
-                            <a href="{{ route('teachers.create') }}" class="btn btn-primary">
-                                <i class="fas fa-user-plus"></i> Add Teacher
+                            <a href="{{ route('teachers.create') }}" class="btn btn-primary mb-1">
+                                Add New Teacher
                             </a>
                         </div>
                     </div>
@@ -25,14 +25,19 @@
             <div class="container-fluid">
                 <div class="card card-outline card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">All Teachers ({{ $teachers->count() }})</h3>
-                        <x-search-filter :route="route('teachers.index')" placeholder="Search by name, email or employee ID..."
-                    :show-gender="true" />
+                        <div class="d-flex justify-content-between align-items-center flex-nowrap">
+                            <h3 class="card-title mb-2 md-sm-0 mr-2">
+                                All Teachers
+                                <span class="badge badge-secondary">{{ $teachers->count() }}</span>
+                            </h3>
+                            <x-search-filter :route="route('teachers.index')" placeholder="Search by name, email or employee ID..."
+                                                :show-gender="true" />
+                        </div>
                     </div>
 
 
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover table-striped">
+                        <table class="table table-hover table-striped text-nowrap">
                             <thead>
                                 <tr>
                                     <th>Employee ID</th>
@@ -70,14 +75,14 @@
                                         <td class="align-middle">
                                             {{ $teacher->teacherProfile->qualification ?? 'N/A' }}
                                         </td>
-                                        <td class="align-middle">
+                                        <td class="align-middle text-wrap">
                                             @if ($teacher->allocations->count() > 0)
                                                 @foreach ($teacher->allocations as $allocation)
                                                     <div class="mb-1">
-                                                        <span class="badge badge-info">
+                                                        <span class="badge badge-secondary">
                                                             {{ $allocation->subject->name }}
                                                         </span>
-                                                        <small class="text-muted">
+                                                        <small class="text-muted d-none d-md-inline">
                                                             {{ $allocation->section->classLevel->name ?? '' }}
                                                             - {{ $allocation->section->name ?? '' }}
                                                         </small>
@@ -89,8 +94,8 @@
                                         </td>
                                         <td class="align-middle text-right">
                                             <a href="{{ route('teachers.edit', $teacher->id) }}"
-                                                class="btn btn-sm btn-warning">
-                                                <i class="fas fa-edit"></i>
+                                                class="btn btn-sm btn-info">
+                                                <i class="fas fa-pen"></i>
                                             </a>
                                             <form action="{{ route('teachers.destroy', $teacher->id) }}" method="POST"
                                                 class="d-inline">
@@ -116,11 +121,6 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
-                                        <td colspan="6" class="text-center p-4">
-                                            
-                                        </td>
-                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>

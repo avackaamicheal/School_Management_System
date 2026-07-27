@@ -4,7 +4,7 @@
     <div class="content-wrapper">
         <div class="content-header bg-white border-bottom mb-4 pb-3 pt-4">
             <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div>
                         <h1 class="m-0 font-weight-bold text-dark">
                             <i class="fas fa-home text-primary mr-2"></i> Family Portal
@@ -14,7 +14,7 @@
                             {{ now()->format('l, F j, Y') }}
                         </p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right mt-2 mt-sm-0">
                         @if ($activeTerm)
                             <span class="badge badge-success px-3 py-2" style="border-radius: 20px;">
                                 <i class="fas fa-calendar-alt mr-1"></i>
@@ -41,7 +41,7 @@
                         <div class="col-12">
                             <div class="card bg-gradient-primary shadow-sm mb-0">
                                 <div class="card-body py-3">
-                                    <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
                                         <div>
                                             <h5 class="text-white mb-0 font-weight-bold">
                                                 <i class="fas fa-users mr-2"></i>
@@ -51,7 +51,7 @@
                                                 Scroll down to view each child's full report
                                             </small>
                                         </div>
-                                        <div class="text-right">
+                                        <div class="text-right mt-2 mt-sm-0">
                                             <h4 class="text-white mb-0 font-weight-bold">
                                                 ₦{{ number_format($totalOutstanding) }}
                                             </h4>
@@ -89,7 +89,7 @@
 
                     {{-- Stats Cards --}}
                     <div class="row">
-                        <div class="col-lg-3 col-6">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div class="small-box {{ $data['outstandingBalance'] > 0 ? 'bg-danger' : 'bg-success' }}">
                                 <div class="inner">
                                     <h3>₦{{ number_format($data['outstandingBalance']) }}</h3>
@@ -103,7 +103,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-6">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div class="small-box {{ $data['termRate'] >= 75 ? 'bg-info' : 'bg-warning' }}">
                                 <div class="inner">
                                     <h3>{{ $data['termRate'] }}%</h3>
@@ -116,7 +116,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-6">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div class="small-box bg-primary">
                                 <div class="inner">
                                     <h3>{{ $data['average'] ?? 'N/A' }}{{ $data['average'] ? '%' : '' }}</h3>
@@ -129,7 +129,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-6">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div
                                 class="small-box {{ $data['todayAttendance']?->status == 'PRESENT' ? 'bg-success' : ($data['todayAttendance']?->status == 'ABSENT' ? 'bg-danger' : 'bg-secondary') }}">
                                 <div class="inner">
@@ -161,6 +161,7 @@
                                 </div>
                                 <div class="card-body p-0">
                                     @if ($data['todayClasses']->count() > 0)
+                                        <div class="table-responsive">
                                         <table class="table table-hover m-0">
                                             <thead class="bg-light">
                                                 <tr>
@@ -194,6 +195,7 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                        </div>
                                     @else
                                         <div class="text-center p-4 text-muted">
                                             <i class="fas fa-coffee fa-2x mb-2"></i>
@@ -212,6 +214,7 @@
                                     </h3>
                                 </div>
                                 <div class="card-body p-0">
+                                    <div class="table-responsive">
                                     <table class="table table-striped table-hover m-0">
                                         <thead>
                                             <tr>
@@ -277,9 +280,10 @@
                                             @endforelse
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                                 @if ($data['grades']->count() > 0)
-                                    <div class="card-footer d-flex justify-content-between align-items-center">
+                                    <div class="card-footer d-flex justify-content-between align-items-center flex-wrap">
                                         <span class="font-weight-bold">
                                             Term Average:
                                             <strong class="text-primary">{{ $data['average'] }}%</strong>
@@ -304,19 +308,19 @@
 
                                     {{-- Term Summary --}}
                                     <div class="row text-center mb-4">
-                                        <div class="col-4">
+                                        <div class="col-6 col-md-4">
                                             <div class="h3 font-weight-bold text-success mb-0">
                                                 {{ $data['termPresent'] }}
                                             </div>
                                             <small class="text-muted">Present</small>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-6 col-md-4">
                                             <div class="h3 font-weight-bold text-danger mb-0">
                                                 {{ $data['termAbsent'] }}
                                             </div>
                                             <small class="text-muted">Absent</small>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-6 col-md-4">
                                             <div class="h3 font-weight-bold text-primary mb-0">
                                                 {{ $data['termRate'] }}%
                                             </div>
@@ -328,6 +332,7 @@
                                     <h6 class="font-weight-bold text-muted mb-3">
                                         Monthly Breakdown (Last 6 Months)
                                     </h6>
+                                    <div class="table-responsive">
                                     <table class="table table-sm table-bordered m-0">
                                         <thead class="bg-light">
                                             <tr>
@@ -355,6 +360,7 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
 

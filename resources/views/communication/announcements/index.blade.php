@@ -37,12 +37,12 @@
                                         </select>
                                     </div>
                                     <div class="row">
-                                        <div class="col-6 form-group">
+                                        <div class="col-md-6 col-12 form-group">
                                             <label>Publish Date</label>
                                             <input type="datetime-local" name="publish_at" class="form-control">
                                             <small class="text-muted">Leave blank for immediate</small>
                                         </div>
-                                        <div class="col-6 form-group">
+                                        <div class="col-md-6 col-12 form-group">
                                             <label>Expiration Date</label>
                                             <input type="datetime-local" name="expires_at" class="form-control">
                                             <small class="text-muted">Leave blank for permanent</small>
@@ -65,10 +65,11 @@
                                     @forelse($announcements as $post)
                                         <li class="item">
                                             <div class="product-info ml-0">
+                                            <div class="d-flex justify-content-between align-items-start flex-wrap">
                                                 <span
-                                                    class="product-title font-weight-bold text-lg">{{ $post->title }}</span>
+                                                    class="product-title font-weight-bold text-lg mr-2">{{ $post->title }}</span>
 
-                                                <span class="float-right">
+                                                <span class="d-flex align-items-center flex-shrink-0">
                                                     @if ($post->target_role)
                                                         <span class="badge badge-warning">{{ $post->target_role }}s
                                                             Only</span>
@@ -84,9 +85,10 @@
                                                                 class="fas fa-trash"></i></button>
                                                     </form>
                                                 </span>
+                                            </div>
 
                                                 <span class="product-description mt-2 text-dark"
-                                                    style="white-space: pre-wrap;">{{ $post->content }}</span>
+                                                    style="white-space: pre-wrap; word-break: break-word;">{{ $post->content }}</span>
 
                                                 <div class="text-muted mt-2 text-sm">
                                                     <i class="fas fa-user-edit"></i> {{ $post->author->name }} &nbsp; |

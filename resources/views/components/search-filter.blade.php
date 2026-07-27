@@ -1,6 +1,6 @@
 <div class="card-tools">
     <form action="{{ $route }}" method="GET" class="d-flex">
-        <div class="input-group input-group-sm" style="width: 250px;">
+        <div class="input-group input-group-sm" style="min-width: 140px; max-width: 100%;">
             <input type="text"
                 name="search"
                 class="form-control float-right"
