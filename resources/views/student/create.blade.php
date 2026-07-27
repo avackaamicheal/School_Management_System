@@ -177,7 +177,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <button type="submit" id="submitBtn" class="btn btn-primary btn-block btn-lg">
-                                        <i class="fas fa-user-check"></i> Complete Admission
+                                        <i class=""></i> Complete Admission
                                     </button>
                                 </div>
                             </div>

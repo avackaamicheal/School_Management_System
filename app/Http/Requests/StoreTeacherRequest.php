@@ -23,8 +23,9 @@ class StoreTeacherRequest extends FormRequest
     {
         return [
 
-            'name'            => ['required', 'string', 'max:255'],
-            'profile_picture' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'first_name'      => ['required', 'string', 'max:255'],
+            'last_name'       => ['required', 'string', 'max:255'],
+            'middle_name'     => ['nullable', 'string', 'max:255'],
             'email'           => ['required', 'email', 'unique:users,email'],
             'password'        => ['required', 'min:8'],
             'qualification'   => ['nullable', 'string', 'max:255'],
@@ -40,14 +41,13 @@ class StoreTeacherRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'          => 'Teacher name is required.',
+            'first_name.required'    => 'First name is required.',
+            'last_name.required'     => 'Last name is required.',
             'email.required'         => 'Email address is required.',
             'email.unique'           => 'This email is already registered.',
             'password.required'      => 'A temporary password is required.',
             'password.min'           => 'Password must be at least 8 characters.',
             'date_of_birth.before'   => 'Date of birth must be a past date.',
-            'profile_picture.image'  => 'Profile picture must be an image.',
-            'profile_picture.max'    => 'Profile picture must not exceed 2MB.',
         ];
     }
 }

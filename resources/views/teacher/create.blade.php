@@ -8,7 +8,7 @@
                     <h1 class="m-0">Add New Teacher</h1>
                 </div>
                 <div class="col-sm-6 text-left text-md-right mt-2">
-                    <a href="{{ route('teachers.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('teachers.index') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left"></i> Back to Teachers
                     </a>
                 </div>
@@ -28,7 +28,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('teachers.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('teachers.store') }}" method="POST">
                 @csrf
                 <div class="row">
                     <div class="col-md-4">
@@ -37,24 +37,28 @@
                                 <h3 class="card-title">Account Info</h3>
                             </div>
                             <div class="card-body">
-                                <div class="form-group text-center mb-4">
-                                    <img id="picturePreview"
-                                        src="{{ asset('dist/img/user2-160x160.jpg') }}"
-                                        class="img-circle elevation-2"
-                                        style="width: 100px; height: 100px; object-fit: cover;"
-                                        alt="Profile Picture">
-                                    <div class="mt-2">
-                                        <label class="btn btn-outline-primary">
-                                            <i class="fas fa-camera"></i> Upload Photo
-                                            <input type="file" name="profile_picture" id="profilePicInput"
-                                                class="d-none" accept="image/*">
-                                        </label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>First Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="first_name" class="form-control"
+                                                value="{{ old('first_name') }}" required>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" class="form-control"
-                                        value="{{ old('name') }}" required>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Last Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="last_name" class="form-control"
+                                                value="{{ old('last_name') }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Middle Name</label>
+                                            <input type="text" name="middle_name" class="form-control"
+                                                value="{{ old('middle_name') }}">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Email Address <span class="text-danger">*</span></label>
@@ -169,14 +173,4 @@
     </section>
 </div>
 
-<script>
-    // Live profile picture preview
-    document.getElementById('profilePicInput').addEventListener('change', function() {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('picturePreview').src = e.target.result;
-        };
-        reader.readAsDataURL(this.files[0]);
-    });
-</script>
 @endsection

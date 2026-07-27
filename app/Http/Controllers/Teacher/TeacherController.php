@@ -52,8 +52,10 @@ class TeacherController extends Controller
 
     public function store(StoreTeacherRequest $request, School $school)
     {
+        $name = trim(implode(' ', array_filter([$request->first_name, $request->middle_name, $request->last_name])));
+
         $user = User::create([
-            'name' => $request->name,
+            'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'school_id' => session('active_school'),
@@ -61,15 +63,9 @@ class TeacherController extends Controller
 
         $user->assignRole('Teacher');
 
-        $picturePath = null;
-        if ($request->hasFile('profile_picture')) {
-            $picturePath = $request->file('profile_picture')->store('teacher-profiles', 'public');
-        }
-
         TeacherProfile::create([
             'user_id' => $user->id,
             'school_id' => session('active_school'),
-            'profile_picture' => $picturePath,
             'employee_id' => TeacherProfile::generateEmployeeId(),
             'qualification' => $request->qualification,
             'hire_date' => $request->hire_date,
@@ -156,7 +152,7 @@ class TeacherController extends Controller
                 'teacherProfile',
                 'allocations.subject',
                 'allocations.section.classLevel'
-            ])
+            ])->latest()
             ->get();
 
         $classLevels = ClassLevel::with('sections')->get();
@@ -195,9 +191,67 @@ class TeacherController extends Controller
         }
     }
 
-    public function destroyAllocation(School $school, User $teacher, ClassroomAssignment $allocation)
+    public function destroyAllocation(School $school, User $teacher, ClassroomAssignment $allocation, Request $request)
     {
         $allocation->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Assignment removed successfully!']);
+        }
+
         return back()->with('success', 'Assignment removed successfully!');
+    }
+
+    public function storeAllocation(School $school, Request $request)
+    {
+        $request->validate([
+            'teacher_id' => 'required|exists:users,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'section_id' => 'required|exists:sections,id',
+        ]);
+
+        try {
+            $allocation = ClassroomAssignment::create([
+                'school_id' => session('active_school'),
+                'teacher_id' => $request->teacher_id,
+                'subject_id' => $request->subject_id,
+                'section_id' => $request->section_id,
+            ]);
+
+            try {
+                $allocation->load(['subject', 'section.classLevel']);
+                $teacher = User::find($request->teacher_id);
+                if ($teacher) {
+                    $teacher->notify(new NewAssignmentNotification($allocation));
+                }
+            } catch (\Exception $e) {
+                Log::warning("NewAssignment notification failed: " . $e->getMessage());
+            }
+
+            return response()->json(['message' => 'Teacher Assigned successfully!']);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'This teacher is already assigned to this subject in this section.'], 422);
+        }
+    }
+
+    public function updateAllocation(School $school, ClassroomAssignment $allocation, Request $request)
+    {
+        $request->validate([
+            'teacher_id' => 'required|exists:users,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'section_id' => 'required|exists:sections,id',
+        ]);
+
+        try {
+            $allocation->update([
+                'teacher_id' => $request->teacher_id,
+                'subject_id' => $request->subject_id,
+                'section_id' => $request->section_id,
+            ]);
+
+            return response()->json(['message' => ' Teacher Assignment updated successfully!']);
+        } catch (QueryException $e) {
+            return response()->json(['message' => 'This teacher is already assigned to this subject in this section.'], 422);
+        }
     }
 }

@@ -37,7 +37,7 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <button type="submit" class="btn btn-primary">Load</button>
+                                    <button type="submit" class="btn btn-primary mt-2">Load</button>
                                 </form>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <button type="submit" class="btn btn-info">Load</button>
+                                    <button type="submit" class="btn btn-info mt-2">Load</button>
                                 </form>
                             </div>
                         </div>

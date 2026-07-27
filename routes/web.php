@@ -110,7 +110,7 @@ Route::middleware(['auth', 'active'])
             Route::get('students/export', [StudentAdmissionController::class, 'export'])->name('students.export');
             Route::post('students/import', [StudentAdmissionController::class, 'import'])->name('students.import');
             Route::get('students/template', [StudentAdmissionController::class, 'downloadTemplate'])->name('students.template');
-            Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'destroy');
+            Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'show', 'destroy');
             Route::resource('classassignment', ClassroomAssignmentController::class)->only('index', 'create', 'destroy');
             // Academic Settings
             Route::get('/academic-settings', [AcademicSettingsController::class, 'index'])->name('academic-settings.index');
@@ -137,6 +137,8 @@ Route::middleware(['auth', 'active'])
             Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
             Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
             Route::delete('/teachers/{teacher}/allocations/{allocation}', [TeacherController::class, 'destroyAllocation'])->name('teachers.allocations.destroy');
+            Route::post('/assignments', [TeacherController::class, 'storeAllocation'])->name('assignments.store');
+            Route::put('/assignments/{allocation}', [TeacherController::class, 'updateAllocation'])->name('assignments.update');
 
             //Parent management
             Route::get('/parents', [ParentController::class, 'index'])->name('parents.index');

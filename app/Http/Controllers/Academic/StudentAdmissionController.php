@@ -61,6 +61,12 @@ class StudentAdmissionController extends Controller
         return view('student.index', compact('students', 'classLevels', 'sections'));
     }
 
+    public function show(School $school, User $student)
+    {
+        $student->load(['studentProfile.section.classLevel', 'parents']);
+        return view('student.show', compact('student'));
+    }
+
     public function create()
     {
         $classLevels = ClassLevel::with('sections')->get(); // Load sections for dynamic dropdown
