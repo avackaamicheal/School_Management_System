@@ -22,7 +22,8 @@ class StoreParentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'       => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
             'email'      => 'required|email|unique:users,email',
             'password'   => 'required|min:8|confirmed',
             'alt_phone'      => 'required|string|max:20',

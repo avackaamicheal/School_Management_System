@@ -40,7 +40,7 @@ class ParentController extends Controller
     public function store(StoreParentRequest $request, School $school)
     {
         $parent = User::create([
-            'name' => $request->name,
+            'name' => $request->first_name . ' ' . $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'school_id' => session('active_school'),
@@ -78,14 +78,19 @@ class ParentController extends Controller
     public function edit(School $school, User $parent)
     {
         $parent->load('parentProfile');
-        return view('parent.edit', compact('parent'));
+
+        $nameParts = explode(' ', trim($parent->name), 2);
+        $firstName = $nameParts[0] ?? '';
+        $lastName  = $nameParts[1] ?? '';
+
+        return view('parent.edit', compact('parent', 'firstName', 'lastName'));
     }
 
     public function update(UpdateParentRequest $request,School $school, User $parent)
     {
         //dd($request->validated(), $parent->id, $parent->parentProfile);
         $parent->update([
-            'name' => $request->name,
+            'name' => $request->first_name . ' ' . $request->last_name,
             'email' => $request->email,
         ]);
 

@@ -28,7 +28,8 @@ class UpdateParentRequest extends FormRequest
         : $this->route()->parameter('parent')->id ?? null;
 
         return [
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $parentId,
             'alt_phone' => 'nullable|string|max:20',
             'occupation' => 'nullable|string|max:255',
