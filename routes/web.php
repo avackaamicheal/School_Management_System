@@ -110,7 +110,7 @@ Route::middleware(['auth', 'active'])
             Route::get('students/export', [StudentAdmissionController::class, 'export'])->name('students.export');
             Route::post('students/import', [StudentAdmissionController::class, 'import'])->name('students.import');
             Route::get('students/template', [StudentAdmissionController::class, 'downloadTemplate'])->name('students.template');
-            Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'show', 'destroy');
+            Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'show', 'edit', 'update', 'destroy');
             Route::resource('classassignment', ClassroomAssignmentController::class)->only('index', 'create', 'destroy');
             // Academic Settings
             Route::get('/academic-settings', [AcademicSettingsController::class, 'index'])->name('academic-settings.index');

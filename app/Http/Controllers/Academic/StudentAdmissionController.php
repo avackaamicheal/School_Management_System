@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Academic;
 use App\Exports\StudentsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Imports\StudentsImport;
 use App\Models\ClassLevel;
 use App\Models\ParentProfile;
@@ -177,6 +178,34 @@ class StudentAdmissionController extends Controller
         }
     }
 
+
+    public function edit(School $school, User $student)
+    {
+        $classLevels = ClassLevel::with('sections')->get();
+        $student->load(['studentProfile']);
+        return view('student.edit', compact('student', 'classLevels'));
+    }
+
+    public function update(UpdateStudentRequest $request, School $school, User $student)
+    {
+        $student->update([
+            'name' => $request->first_name . ' ' . $request->last_name,
+            'email' => $request->email,
+        ]);
+
+        $student->studentProfile->update([
+            'class_level_id' => $request->class_level_id,
+            'section_id' => $request->section_id,
+            'date_of_birth' => $request->dob,
+            'gender' => $request->gender,
+            'address' => $request->address,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student updated successfully!'
+        ]);
+    }
 
     public function destroy(User $student)
     {

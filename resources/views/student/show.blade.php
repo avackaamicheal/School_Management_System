@@ -8,11 +8,9 @@
                     <a href="{{ route('student.index') }}" class="text-muted"><i class="fas fa-arrow-left"></i></a>
                     Student Profile
                 </h1>
-                {{-- <div>
-                    <a href="{{ route('student.edit', $student->id) }}" class="btn btn-warning shadow-sm">
-                        <i class="fas fa-edit mr-1"></i> Edit
-                    </a>
-                </div> --}}
+                <a href="{{ route('student.edit', $student->id) }}" class="btn btn-warning shadow-sm">
+                    <i class="fas fa-edit mr-1"></i> Edit
+                </a>
             </div>
         </div>
 

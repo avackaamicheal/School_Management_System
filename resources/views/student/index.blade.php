@@ -84,6 +84,9 @@
                                                 <span class="description">
                                                     {{ $student->email ?? 'No Email' }}
                                                 </span>
+                                                <span class="description">
+                                                    Joined: {{ $student->created_at->format('d M Y') ?? 'N/A' }}
+                                                </span>
                                             </div>
                                         </td>
                                         <td>
@@ -117,6 +120,9 @@
                                         <td>
                                             <a href="{{ route('student.show', $student->id) }}" class="btn btn-sm btn-info">
                                                 <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('student.edit', $student->id) }}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger"
                                                 onclick="deleteStudent({{ $student->id }})">
