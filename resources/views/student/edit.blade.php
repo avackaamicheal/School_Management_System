@@ -29,9 +29,9 @@
                 <form id="edit-form" onsubmit="handleEdit(event)">
                     @csrf
                     @method('PUT')
-                    <div class="row">
+                    <div class="row justify-content-center">
 
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             <div class="card card-outline card-primary">
                                 <div class="card-header">
                                     <h3 class="card-title">Student Details</h3>
@@ -113,14 +113,9 @@
                                     </div>
 
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <button type="submit" id="submitBtn" class="btn btn-warning btn-block btn-lg">
-                                        <i class="fas fa-save"></i> Update Student
+                                <div class="card-footer">
+                                    <button type="submit" id="submitBtn" class="btn btn-primary btn-block btn-lg">
+                                        <i class=""></i> Update Student
                                     </button>
                                 </div>
                             </div>
