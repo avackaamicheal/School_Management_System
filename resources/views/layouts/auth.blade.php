@@ -6,7 +6,7 @@
     <title>@yield('title', 'Axia SMS')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito:400,600,700&display=swap" rel="stylesheet" />
-    @vite(['resources/css/adminlte-overrides.css'])
+    @vite(['resources/css/adminlte-overrides.css', 'resources/css/auth.css'])
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     @stack('styles')
@@ -16,5 +16,6 @@
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+    @stack('scripts')
 </body>
 </html>

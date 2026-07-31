@@ -5,7 +5,7 @@
         <div class="content-header">
             <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h1 class="m-0 mb-2 text-truncate">Financial Summary: <strong>{{ $activeTerm->name ?? 'No Active Term' }}</strong></h1>
-                <a href="{{ route('finance.reports.export') }}" class="btn btn-success font-weight-bold shadow-sm">
+                <a href="{{ resolveRoute('finance.reports.export') }}" class="btn btn-success font-weight-bold shadow-sm">
                     Export to Excel
                 </a>
             </div>
@@ -18,7 +18,7 @@
                     <div class="col-12 col-sm-6 col-lg-4">
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3 class="text-truncate" title="${{ Number::currency($totalExpected, 'NGN') }}">${{ Number::currency($totalExpected, 'NGN') }}</h3>
+                                <h3 class="text-truncate" title="{{ Number::currency($totalExpected, 'NGN') }}">{{ Number::currency($totalExpected, 'NGN') }}</h3>
                                 <p>Total Expected Revenue</p>
                             </div>
                             <div class="icon"><i class="fas fa-file-invoice"></i></div>
@@ -28,7 +28,7 @@
                     <div class="col-12 col-sm-6 col-lg-4">
                         <div class="small-box bg-success">
                             <div class="inner">
-                                <h3 class="text-truncate" title="${{ Number::currency($totalCollected, 'NGN') }}">${{ Number::currency($totalCollected, 'NGN') }}</h3>
+                                <h3 class="text-truncate" title="{{ Number::currency($totalCollected, 'NGN') }}">{{ Number::currency($totalCollected, 'NGN') }}</h3>
                                 <p>Total Collected</p>
                             </div>
                             <div class="icon"><i class="fas fa-hand-holding-usd"></i></div>

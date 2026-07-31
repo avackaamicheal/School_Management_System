@@ -48,8 +48,8 @@ class SchoolRegistrationController extends Controller
             // Auto login after registration
             Auth::login($admin);
 
-            // Redirect straight to subscription page
-            return redirect()->route('subscription.index');
+            // Redirect to thank-you screen
+            return redirect()->route('school.register')->with('registered', true);
 
         } catch (\Exception $e) {
             DB::rollBack();

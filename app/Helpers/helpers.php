@@ -36,6 +36,10 @@ if (!function_exists('resolveRoute')) {
             'messages.show' => ['Teacher' => 'teacher.messages.show', 'SchoolAdmin' => 'admin.messages.show'],
             'messages.store' => ['Teacher' => 'teacher.messages.store', 'SchoolAdmin' => 'admin.messages.store'],
             'messages.thread.create' => ['Teacher' => 'teacher.messages.thread.create', 'SchoolAdmin' => 'admin.messages.thread.create'],
+            'invoices.index' => ['SchoolAdmin' => 'invoices.index', 'Bursar' => 'bursar.invoices.index'],
+            'payments.store' => ['SchoolAdmin' => 'payments.store', 'Bursar' => 'bursar.payments.store', 'Parent' => 'parent.payments.store'],
+            'payments.receipt' => ['SchoolAdmin' => 'payments.receipt', 'Bursar' => 'bursar.payments.receipt'],
+            'finance.reports.export' => ['SchoolAdmin' => 'finance.reports.export', 'Bursar' => 'bursar.reports.export'],
         ];
 
         // Check if this route needs role-based resolution

@@ -2,27 +2,51 @@
 
 @section('title', 'Axia SMS | Verify Email')
 
-@section('content')
-    <div class="login-box">
-        <div class="card card-outline card-primary">
-            <div class="card-header text-center">
-                <a href="{{ url('/') }}" class="h1"><b>Axia</b>SMS</a>
-            </div>
-            <div class="card-body">
-                <p class="login-box-msg">{{ __('Verify Your Email Address') }}</p>
+@section('body_class', '')
 
-                @if (session('resent'))
-                    <div class="alert alert-success" role="alert">
-                        {{ __('A fresh verification link has been sent to your email address.') }}
-                    </div>
+@section('content')
+    <div class="multi-step-wrapper">
+        <div class="multi-step-container">
+            <div class="auth-sidebar">
+                <svg class="sidebar-bg" xmlns="http://www.w3.org/2000/svg" width="274" height="568" fill="none" viewBox="0 0 274 568" preserveAspectRatio="xMidYMid slice">
+                    <mask id="a" width="274" height="568" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha">
+                        <rect width="274" height="568" fill="#fff" rx="10"/>
+                    </mask>
+                    <g mask="url(#a)">
+                        <path fill="#6259FF" fill-rule="evenodd" d="M-34.692 543.101C3.247 632.538 168.767 685.017 211.96 612.52c43.194-72.497-66.099-85.653-104.735-160.569-38.635-74.916-68.657-121.674-124.482-104.607-55.824 17.068-55.375 106.32-17.436 195.757Z" clip-rule="evenodd"/>
+                        <path fill="#F9818E" fill-rule="evenodd" d="M233.095 601.153c60.679-28.278 92.839-143.526 41.875-171.528-50.965-28.003-57.397 47.579-108.059 75.987-50.662 28.408-82.14 50.207-69.044 88.241 13.096 38.034 74.549 35.578 135.228 7.3Z" clip-rule="evenodd"/>
+                        <path stroke="#fff" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="5" d="m165.305 469.097 10.607-10.806M209.461 474.581l-12.506-10.503M187.56 488.991l-6.908 14.798"/>
+                        <path fill="#FFAF7E" d="M.305 546.891c37.003 0 67-29.997 67-67s-29.997-67-67-67-67 29.997-67 67 29.997 67 67 67Z"/>
+                    </g>
+                </svg>
+                <div class="sidebar-text">
+                    <div class="sidebar-icon"><i class="fas fa-school"></i></div>
+                    <h3>Axia SMS</h3>
+                    <p>School Management System</p>
+                </div>
+            </div>
+            <div class="auth-content">
+                <div class="page-header">
+                    <h2>Verify Your Email</h2>
+                    <p>Check your inbox</p>
+                </div>
+
+                @if(session('resent'))
+                    <div class="alert-success">{{ __('A fresh verification link has been sent to your email address.') }}</div>
                 @endif
 
-                <p>{{ __('Before proceeding, please check your email for a verification link.') }}</p>
-                <p>{{ __('If you did not receive the email') }},</p>
+                <p style="color: hsl(231, 11%, 63%); margin-bottom: 1rem; line-height: 1.6;">
+                    {{ __('Before proceeding, please check your email for a verification link.') }}
+                </p>
+                <p style="color: hsl(231, 11%, 63%); margin-bottom: 2rem; line-height: 1.6;">
+                    {{ __('If you did not receive the email') }},
+                </p>
 
-                <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
+                <form method="POST" action="{{ route('verification.resend') }}">
                     @csrf
-                    <button type="submit" class="btn btn-link p-0 m-0 align-baseline">{{ __('click here to request another') }}</button>.
+                    <button type="submit" class="btn-submit" style="width:auto; padding:.75rem 2rem;">
+                        {{ __('Click here to request another') }}
+                    </button>
                 </form>
             </div>
         </div>

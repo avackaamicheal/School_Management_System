@@ -18,7 +18,7 @@
                 <div class="card card-outline card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Invoice List</h3>
-                        <x-search-filter :route="route('invoices.index')" placeholder="Search by invoice number or student name..."
+                        <x-search-filter :route="resolveRoute('invoices.index')" placeholder="Search by invoice number or student name..."
                             :show-status="true" :status-options="['PAID' => 'Paid', 'UNPAID' => 'Unpaid', 'PARTIAL' => 'Partial']" />
                     </div>
                     <div class="card-body table-responsive p-0">
@@ -27,6 +27,7 @@
                                 <tr>
                                     <th>Invoice #</th>
                                     <th>Student</th>
+                                    <th>Class</th>
                                     <th>Total</th>
                                     <th>Paid</th>
                                     <th>Balance</th>
@@ -39,10 +40,11 @@
                                     <tr>
                                         <td class="align-middle font-weight-bold">{{ $invoice->invoice_number }}</td>
                                         <td class="align-middle">{{ $invoice->student->name }}</td>
-                                        <td class="align-middle">${{ number_format($invoice->total_amount, 2) }}</td>
+                                        <td>{{ $invoice->student->studentProfile->section->classLevel->name ?? '' }}</td>
+                                        <td class="align-middle">{{ Number::currency($invoice->total_amount, 'NGN') }}</td>
                                         <td class="align-middle text-success">
-                                            ${{ number_format($invoice->amountPaid(), 2) }}</td>
-                                        <td class="align-middle text-danger">${{ number_format($invoice->balance(), 2) }}
+                                            {{ Number::currency($invoice->amountPaid(), 'NGN') }}</td>
+                                        <td class="align-middle text-danger">{{ Number::currency($invoice->balance(), 'NGN') }}
                                         </td>
                                         <td class="align-middle">
                                             @if ($invoice->status == 'PAID')
@@ -72,8 +74,8 @@
                                                         <div class="dropdown-menu">
                                                             @foreach ($invoice->payments as $payment)
                                                                 <a class="dropdown-item"
-                                                                    href="{{ route('payments.receipt', $payment->id) }}">
-                                                                    ${{ $payment->amount }} on
+                                                                    href="{{ resolveRoute('payments.receipt', $payment->id) }}">
+                                                                    {{ Number::currency($payment->amount, 'NGN') }} on
                                                                     {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d') }}
                                                                 </a>
                                                             @endforeach
@@ -91,7 +93,7 @@
                             <div class="modal fade" id="payModal{{ $invoice->id }}" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form action="{{ route('payments.store', $invoice->id) }}" method="POST">
+                                        <form action="{{ resolveRoute('payments.store', $invoice->id) }}" method="POST">
                                             @csrf
                                             <div class="modal-header bg-primary text-white">
                                                 <h5 class="modal-title">Record Payment:
@@ -101,7 +103,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <div class="alert alert-info">Remaining Balance:
-                                                    <strong>${{ number_format($invoice->balance(), 2) }}</strong>
+                                                    <strong>{{ Number::currency($invoice->balance(), 'NGN') }}</strong>
                                                 </div>
 
                                                 <div class="form-group">

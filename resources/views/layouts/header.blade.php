@@ -22,6 +22,9 @@
             @role('Parent')
                 <a href="{{ route('parent.dashboard') }}" class="nav-link">Family Portal</a>
             @endrole
+            @role('Bursar')
+                <a href="{{ route('bursar.dashboard') }}" class="nav-link">Bursar Portal</a>
+            @endrole
         </li>
 
         {{-- Mobile home icon --}}
@@ -33,6 +36,7 @@
                 elseif (auth()->user()->hasRole('Teacher')) $mobileDashboardRoute = 'teacher.dashboard';
                 elseif (auth()->user()->hasRole('Student')) $mobileDashboardRoute = 'student.dashboard';
                 elseif (auth()->user()->hasRole('Parent')) $mobileDashboardRoute = 'parent.dashboard';
+                elseif (auth()->user()->hasRole('Bursar')) $mobileDashboardRoute = 'bursar.dashboard';
             @endphp
             @if ($mobileDashboardRoute)
                 <a href="{{ route($mobileDashboardRoute) }}" class="nav-link"><i class="fas fa-home"></i></a>
@@ -194,6 +198,10 @@
                                 <i class="fas fa-check-double mr-1"></i> Mark all as read
                             </a>
                         @endif
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ route('notifications.index') }}" class="dropdown-item dropdown-footer text-center">
+                            <i class="fas fa-list mr-1"></i> View all notifications
+                        </a>
                     </div>
                 </li>
             @endauth
@@ -207,33 +215,50 @@
                         alt="User Image">
                     <span class="d-none d-md-inline">{{ auth()->user()?->name }}</span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: 90vw;">
-                    <li class="user-header bg-primary">
-                        <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
-                            alt="User Image">
-                        <p>
-                            {{ auth()->user()?->name }}
-                            <small>{{ ucwords(str_replace('_', ' ', auth()->user()?->roles->first()->name ?? 'User')) }}</small>
-                            @if (session('active_school'))
-                                <small
-                                    class="d-block mt-1">{{ \App\Models\School::find(session('active_school'))->name }}</small>
-                            @endif
-                        </p>
-                    </li>
-                    <li class="user-footer">
-                        @role('Teacher')
-                            <a href="{{ route('teacher.profile') }}" class="btn btn-default btn-flat">Profile</a>
-                        @elserole('SchoolAdmin')
-                            <a href="{{ route('school.profile') }}" class="btn btn-default btn-flat">Profile</a>
-                        @else
-                            <a href="#" class="btn btn-default btn-flat">Profile</a>
-                        @endrole
-                        <form action="{{ route('logout') }}" method="POST" class="float-right">
-                            @csrf
-                            <button type="submit" class="btn btn-default btn-flat">Sign out</button>
-                        </form>
-                    </li>
-                </ul>
+                <div class="dropdown-menu dropdown-menu-right" style="min-width: 180px; max-width: 240px;">
+                    <span class="dropdown-header text-center">
+                        <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('dist/img/user2-160x160.jpg') }}"
+                            class="img-circle elevation-2 mb-1"
+                            style="width: 40px; height: 40px; object-fit: cover;" alt="User Image">
+                        <div class="font-weight-bold">{{ auth()->user()?->name }}</div>
+                        <small
+                            class="text-muted">{{ ucwords(str_replace('_', ' ', auth()->user()?->roles->first()->name ?? 'User')) }}</small>
+                    </span>
+                    <div class="dropdown-divider"></div>
+
+                    @php
+                        $dashboardRoute = '';
+                        if (auth()->user()->hasRole('SuperAdmin')) $dashboardRoute = 'superadmin.dashboard';
+                        elseif (auth()->user()->hasRole('SchoolAdmin')) $dashboardRoute = 'schooladmin.dashboard';
+                        elseif (auth()->user()->hasRole('Teacher')) $dashboardRoute = 'teacher.dashboard';
+                        elseif (auth()->user()->hasRole('Student')) $dashboardRoute = 'student.dashboard';
+                        elseif (auth()->user()->hasRole('Parent')) $dashboardRoute = 'parent.dashboard';
+                        elseif (auth()->user()->hasRole('Bursar')) $dashboardRoute = 'bursar.dashboard';
+
+                        $profileRoute = match (auth()->user()?->roles->first()->name ?? '') {
+                            'Teacher' => 'teacher.profile',
+                            'SchoolAdmin' => 'school.profile',
+                            default => '#',
+                        };
+                    @endphp
+
+                    @if ($dashboardRoute)
+                        <a href="{{ route($dashboardRoute) }}" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt mr-2 text-primary"></i> Dashboard
+                        </a>
+                    @endif
+                    <a href="{{ $profileRoute === '#' ? '#' : route($profileRoute) }}" class="dropdown-item">
+                        <i class="fas fa-user-circle mr-2 text-success"></i> Profile
+                    </a>
+
+                    <div class="dropdown-divider"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </button>
+                    </form>
+                </div>
             </li>
         @endauth
     </ul>
@@ -297,6 +322,12 @@
                             <a href="{{ route('parent.dashboard') }}" class="nav-link @activeRoute('parent.dashboard')"><i
                                     class="nav-icon fas fa-user-friends"></i>
                                 <p>Parent Portal</p>
+                            </a>
+                        @endrole
+                        @role('Bursar')
+                            <a href="{{ route('bursar.dashboard') }}" class="nav-link @activeRoute('bursar.dashboard')"><i
+                                    class="nav-icon fas fa-coins"></i>
+                                <p>Bursar Portal</p>
                             </a>
                         @endrole
                     </li>
@@ -400,6 +431,12 @@
                                 <p>Parents</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('bursars.index') }}" class="nav-link @activeRoute('bursars.*')">
+                                <i class="nav-icon fas fa-coins"></i>
+                                <p>Bursars</p>
+                            </a>
+                        </li>
 
                         <li class="nav-header">FINANCE</li>
                         <li class="nav-item"><a href="{{ route('fees.index') }}" class="nav-link @activeRoute('fees.*')"><i
@@ -467,6 +504,22 @@
                             <a href="{{ route('teacher.profile') }}" class="nav-link @activeRoute('teacher.profile')">
                                 <i class="nav-icon fas fa-user-circle"></i>
                                 <p>My Profile</p>
+                            </a>
+                        </li>
+                    @endrole
+
+                    @role('Bursar')
+                        <li class="nav-header">FINANCE</li>
+                        <li class="nav-item">
+                            <a href="{{ route('bursar.invoices.index') }}" class="nav-link @activeRoute('bursar.invoices.*')">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <p>Invoices</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('bursar.reports.index') }}" class="nav-link @activeRoute('bursar.reports.*')">
+                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <p>Reports</p>
                             </a>
                         </li>
                     @endrole

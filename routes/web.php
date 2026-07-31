@@ -45,6 +45,21 @@ Route::post('/register/school', [SchoolRegistrationController::class, 'store'])-
 
 // notifications route available to all roles
 Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', function () {
+        $user = Auth::user();
+
+        $school = \App\Models\School::find(session('active_school')) ?? $user->school;
+
+        if ($school) {
+            session(['active_school' => $school->id]);
+            \Illuminate\Support\Facades\URL::defaults(['school' => $school->slug]);
+        }
+
+        return view('notifications.index', [
+            'notifications' => $user->notifications()->paginate(20),
+        ]);
+    })->name('notifications.index');
+
     Route::post('/notifications/{id}/read', function ($id) {
         Auth::user()->notifications->where('id', $id)->update(['read_at' => now()]);
         return response()->json(['status' => 'ok']);
@@ -110,7 +125,7 @@ Route::middleware(['auth', 'active'])
             Route::get('students/export', [StudentAdmissionController::class, 'export'])->name('students.export');
             Route::post('students/import', [StudentAdmissionController::class, 'import'])->name('students.import');
             Route::get('students/template', [StudentAdmissionController::class, 'downloadTemplate'])->name('students.template');
-            Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'show', 'edit', 'update', 'destroy');
+            Route::resource('student', StudentAdmissionController::class)->only('index', 'create', 'store', 'show', 'edit', 'update', 'destroy')->whereNumber('student');
             Route::resource('classassignment', ClassroomAssignmentController::class)->only('index', 'create', 'destroy');
             // Academic Settings
             Route::get('/academic-settings', [AcademicSettingsController::class, 'index'])->name('academic-settings.index');
@@ -155,8 +170,13 @@ Route::middleware(['auth', 'active'])
             //school
             Route::get('/school-profile', [SchoolController::class, 'show'])->name('school.profile');
             Route::put('/school-profile', [SchoolController::class, 'update'])->name('school.profile.update');
-            // Bursar
-            Route::get('/bursar/dashboard', [BursarController::class, 'index'])->name('bursar.dashboard');
+            // Bursar management
+            Route::get('/bursars', [BursarController::class, 'manage'])->name('bursars.index');
+            Route::get('/bursars/create', [BursarController::class, 'create'])->name('bursars.create');
+            Route::post('/bursars', [BursarController::class, 'store'])->name('bursars.store');
+            Route::get('/bursars/{bursar}/edit', [BursarController::class, 'edit'])->name('bursars.edit');
+            Route::put('/bursars/{bursar}', [BursarController::class, 'update'])->name('bursars.update');
+            Route::delete('/bursars/{bursar}', [BursarController::class, 'destroy'])->name('bursars.destroy');
             // Search - accessible by SchoolAdmin
             Route::get('/search', [SearchController::class, 'index'])->name('search.index');
             Route::get('/search/live', [SearchController::class, 'live'])->name('search.live');
@@ -228,6 +248,20 @@ Route::middleware(['auth', 'active'])
             Route::post('/messages/{thread}', [MessageController::class, 'store'])->name('teacher.messages.store');
             Route::post('/messages/thread/create', [MessageController::class, 'createThread'])->name('teacher.messages.thread.create');
         });
+
+        // -----------------------------------------------
+        // BURSAR ROUTES
+        // -----------------------------------------------
+        Route::middleware(['role:Bursar'])
+            ->prefix('bursar')
+            ->group(function () {
+                Route::get('/dashboard', [BursarController::class, 'index'])->name('bursar.dashboard');
+                Route::get('/invoices', [PaymentController::class, 'index'])->name('bursar.invoices.index');
+                Route::post('/invoices/{invoice}/pay', [PaymentController::class, 'store'])->name('bursar.payments.store');
+                Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('bursar.payments.receipt');
+                Route::get('/reports', [ReportController::class, 'index'])->name('bursar.reports.index');
+                Route::get('/reports/export', [ReportController::class, 'export'])->name('bursar.reports.export');
+            });
 
         // -----------------------------------------------
         // STUDENT ROUTES

@@ -82,6 +82,10 @@ class LoginController extends Controller
             return route('parent.dashboard', ['school' => $slug]);
         }
 
+        if ($user->hasRole('Bursar')) {
+            return route('bursar.dashboard', ['school' => $slug]);
+        }
+
         Auth::logout();
         return route('login');
     }
