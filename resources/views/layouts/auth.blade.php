@@ -16,6 +16,14 @@
     <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
+    <script>
+        $(document).on('click', '.password-toggle', function() {
+            var $input = $(this).closest('.input-group, .password-wrapper').find('input[type="password"], input[type="text"]');
+            var isHidden = $input.attr('type') === 'password';
+            $input.attr('type', isHidden ? 'text' : 'password');
+            $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

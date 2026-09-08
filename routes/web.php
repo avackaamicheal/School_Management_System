@@ -19,6 +19,7 @@ use App\Http\Controllers\Finance\ReportController;
 use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
 use App\Http\Controllers\Parent\ParentController;
+use App\Http\Controllers\Parent\PortalController as ParentPortal;
 use App\Http\Controllers\QuickSetupController;
 use App\Http\Controllers\School\SchoolController;
 use App\Http\Controllers\SchoolAdmin\SchoolAdminController;
@@ -199,11 +200,9 @@ Route::middleware(['auth', 'active'])
             Route::get('/timetable', [TimetableController::class, 'index'])->name('admin.timetable.index');
             Route::post('/timetable', [TimetableController::class, 'store'])->name('admin.timetable.store');
             Route::delete('/timetable/{timetable}', [TimetableController::class, 'destroy'])->name('admin.timetable.destroy');
-            Route::get('/attendance', [AttendanceController::class, 'index'])->name('admin.attendance.index');
+            //Route::get('/attendance', [AttendanceController::class, 'index'])->name('admin.attendance.index');
             Route::post('/attendance', [AttendanceController::class, 'store'])->name('admin.attendance.store');
             Route::get('/attendance/export', [AttendanceController::class, 'export'])->name('admin.attendance.export');
-            Route::get('/grades', [GradeEntryController::class, 'index'])->name('admin.grades.index');
-            Route::post('/grades', [GradeEntryController::class, 'store'])->name('admin.grades.store');
             Route::get('/assessments', [AssessmentWeightController::class, 'index'])->name('admin.assessments.index');
             Route::post('/assessments', [AssessmentWeightController::class, 'store'])->name('admin.assessments.store');
             Route::get('/reports', [ReportCardController::class, 'index'])->name('admin.reports.index');
@@ -282,8 +281,21 @@ Route::middleware(['auth', 'active'])
             Route::post('/invoices/{invoice}/pay', [PaymentController::class, 'store'])->name('parent.payments.store');
             Route::get('/reports/student/{id}', [ReportCardController::class, 'downloadSingle'])->name('parent.reports.single');
 
-
             Route::get('/announcements', [AnnouncementController::class, 'index'])->name('parent.announcements.index');
+
+            // Family portal pages
+            Route::get('/children', [ParentPortal::class, 'children'])->name('parent.children.index');
+            Route::get('/results', [ParentPortal::class, 'results'])->name('parent.results.index');
+            Route::get('/attendance', [ParentPortal::class, 'attendance'])->name('parent.attendance.index');
+            Route::get('/timetable', [ParentPortal::class, 'timetable'])->name('parent.timetable.index');
+            Route::get('/fees', [ParentPortal::class, 'fees'])->name('parent.fees.index');
+            Route::get('/teachers', [ParentPortal::class, 'teachers'])->name('parent.teachers.index');
+
+            // Parent messaging
+            Route::get('/messages', [MessageController::class, 'index'])->name('parent.messages.index');
+            Route::get('/messages/{thread}', [MessageController::class, 'index'])->name('parent.messages.show');
+            Route::post('/messages/{thread}', [MessageController::class, 'store'])->name('parent.messages.store');
+            Route::post('/messages/thread/create', [MessageController::class, 'createThread'])->name('parent.messages.thread.create');
 
         });
     });

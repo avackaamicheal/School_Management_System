@@ -331,11 +331,6 @@
                                     {{ $results['grades']->count() }}
                                 </span>
                             </h3>
-                            <div class="card-tools">
-                                <a href="{{ route('admin.grades.index') }}" class="btn btn-sm btn-outline-primary">
-                                    View All Grades
-                                </a>
-                            </div>
                         </div>
                         <div class="card-body table-responsive p-0">
                             <table class="table table-hover table-striped m-0">

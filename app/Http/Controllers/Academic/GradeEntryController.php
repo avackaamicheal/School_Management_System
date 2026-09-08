@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Academic;
 
 use App\Http\Controllers\Controller;
 use App\Models\AssessmentWeight;
+use App\Models\ClassroomAssignment;
 use App\Models\GradeRecord;
 use App\Models\School;
 use App\Models\Section;
@@ -12,13 +13,34 @@ use App\Models\Term;
 use App\Models\User;
 use App\Notifications\GradePublishedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GradeEntryController extends Controller
 {
     public function index(Request $request)
     {
-        $sections = Section::with('classLevel')->get();
-        $subjects = Subject::all();
+        $user = Auth::user();
+        $allocations = $user->allocations()->get();
+
+        $sectionIds = $allocations->pluck('section_id')->unique()->toArray();
+        $subjectIds = $allocations->pluck('subject_id')->unique()->toArray();
+
+        $sections = Section::with('classLevel')->whereIn('id', $sectionIds)->get();
+        $subjects = Subject::all()->whereIn('id', $subjectIds);
+
+        $subjectsBySection = $allocations->groupBy('section_id')
+            ->map(fn ($items) => $items->pluck('subject_id')->unique()->values()->toArray());
+
+        if ($request->has('section_id') && $request->has('subject_id')) {
+            $isAssignedPair = $allocations->contains(function ($allocation) use ($request) {
+                return (int) $allocation->section_id === (int) $request->section_id
+                    && (int) $allocation->subject_id === (int) $request->subject_id;
+            });
+
+            if (!$isAssignedPair) {
+                abort(403, 'Unauthorized: You can only grade subjects and students assigned to you.');
+            }
+        }
 
         $selectedSection = null;
         $selectedSubject = null;
@@ -62,6 +84,7 @@ class GradeEntryController extends Controller
         return view('academics.grades.index', compact(
             'sections',
             'subjects',
+            'subjectsBySection',
             'selectedSection',
             'selectedSubject',
             'students',
@@ -77,6 +100,32 @@ class GradeEntryController extends Controller
 
         if (!$activeTerm) {
             return back()->with('error', 'No active term found.');
+        }
+
+        $user = Auth::user();
+
+        $isAssigned = ClassroomAssignment::where('teacher_id', $user->id)
+            ->where('section_id', $request->section_id)
+            ->where('subject_id', $request->subject_id)
+            ->exists();
+
+        if (!$isAssigned) {
+            abort(403, 'Unauthorized: You can only grade subjects and students assigned to you.');
+        }
+
+        $studentIds = array_keys($request->grades ?? []);
+
+        if (!empty($studentIds)) {
+            $assignedStudentsCount = User::role('Student')
+                ->whereIn('id', $studentIds)
+                ->whereHas('studentProfile', function ($query) use ($request) {
+                    $query->where('section_id', $request->section_id);
+                })
+                ->count();
+
+            if ($assignedStudentsCount !== count($studentIds)) {
+                abort(403, 'Unauthorized: You can only grade students in your assigned classes.');
+            }
         }
 
         $lockGrades = $request->has('publish_grades');

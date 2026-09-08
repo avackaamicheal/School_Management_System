@@ -322,7 +322,7 @@
                                                 <div class="font-weight-bold text-sm">Unread Messages</div>
                                                 <small class="text-muted">
                                                     @if ($unreadMessages > 0)
-                                                        <a href="{{ route('messages.index') }}">
+                                                        <a href="{{ route('teacher.messages.index') }}">
                                                             {{ $unreadMessages }} unread message(s)
                                                         </a>
                                                     @else

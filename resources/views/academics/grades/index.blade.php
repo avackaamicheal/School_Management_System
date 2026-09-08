@@ -11,15 +11,12 @@
         <section class="content">
             <div class="container-fluid">
 
-                {{-- <x-search-filter :route="route('admin.grades.index')" placeholder="Search by student name..." :show-section="true"
-                    :show-status="true" :status-options="['published' => 'Published', 'draft' => 'Draft']" :sections="$sections" /> --}}
-
                 <div class="card card-default">
                     <div class="card-body">
                         <form action="{{ resolveRoute('grades.index') }}" method="GET" class="row align-items-end">
                             <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0 mr-sm-3">
                                 <label class="mr-2 d-block d-sm-inline">Class Section:</label>
-                                <select name="section_id" class="form-control" required>
+                                <select name="section_id" id="sectionSelect" class="form-control" required>
                                     <option value="">-- Choose Class --</option>
                                     @foreach ($sections as $section)
                                         <option value="{{ $section->id }}"
@@ -32,7 +29,8 @@
 
                             <div class="col-12 col-sm-auto form-group mb-2 mb-sm-0 mr-sm-3">
                                 <label class="mr-2 d-block d-sm-inline">Subject:</label>
-                                <select name="subject_id" class="form-control" required>
+                                <select name="subject_id" id="subjectSelect" class="form-control" required
+                                    data-subjects-by-section="{{ $subjectsBySection->isNotEmpty() ? $subjectsBySection->toJson() : '' }}">
                                     <option value="">-- Choose Subject --</option>
                                     @foreach ($subjects as $subject)
                                         <option value="{{ $subject->id }}"
@@ -170,6 +168,31 @@
                         row.querySelector('.total-display').innerText = total.toFixed(2);
                     }
                 });
+            }
+
+            const sectionSelect = document.getElementById('sectionSelect');
+            const subjectSelect = document.getElementById('subjectSelect');
+
+            if (sectionSelect && subjectSelect) {
+                const raw = subjectSelect.dataset.subjectsBySection;
+                const subjectsBySection = raw ? JSON.parse(raw) : null;
+                const allSubjectOptions = Array.from(subjectSelect.options);
+
+                function filterSubjectsBySection() {
+                    if (!subjectsBySection) return;
+
+                    const allowed = new Set(subjectsBySection[sectionSelect.value] || []);
+                    subjectSelect.value = '';
+
+                    allSubjectOptions.forEach(option => {
+                        const keep = option.value === '' || allowed.has(parseInt(option.value));
+                        option.hidden = !keep;
+                        option.disabled = !keep;
+                    });
+                }
+
+                sectionSelect.addEventListener('change', filterSubjectsBySection);
+                filterSubjectsBySection();
             }
         });
     </script>

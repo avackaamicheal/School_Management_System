@@ -11,6 +11,7 @@
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
+                    @hasanyrole('SchoolAdmin|Teacher')
                     <div class="col-md-4">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
@@ -54,8 +55,9 @@
                             </div>
                         </div>
                     </div>
+                    @endhasanyrole
 
-                    <div class="col-md-8">
+                    <div class="col-md-{{ auth()->user()->hasRole('SchoolAdmin') || auth()->user()->hasRole('Teacher') ? 8 : 12 }}">
                         <div class="card card-outline card-info">
                             <div class="card-header">
                                 <h3 class="card-title">Active Board</h3>
@@ -69,6 +71,7 @@
                                                 <span
                                                     class="product-title font-weight-bold text-lg mr-2">{{ $post->title }}</span>
 
+                                                    @hasanyrole('SchoolAdmin|Teacher')
                                                 <span class="d-flex align-items-center flex-shrink-0">
                                                     @if ($post->target_role)
                                                         <span class="badge badge-warning">{{ $post->target_role }}s
@@ -84,6 +87,7 @@
                                                             onclick="return confirm('Delete this announcement?')"><i
                                                                 class="fas fa-trash"></i></button>
                                                     </form>
+                                                    @endhasanyrole
                                                 </span>
                                             </div>
 

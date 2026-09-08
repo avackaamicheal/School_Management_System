@@ -146,11 +146,11 @@
                                     <canvas id="attendanceChart"></canvas>
                                 </div>
                             </div>
-                            <div class="card-footer text-right">
+                            {{-- <div class="card-footer text-right">
                                 <a href="{{ route('admin.attendance.index') }}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-arrow-right"></i> View Full Attendance
                                 </a>
-                            </div>
+                            </div> --}}
                         </div>
 
                         {{-- Quick Actions --}}
@@ -170,9 +170,9 @@
                                 <a href="{{ route('fees.index') }}" class="btn btn-app bg-warning">
                                     <i class="fas fa-file-invoice"></i> Collect Fees
                                 </a>
-                                <a href="{{ route('admin.attendance.index') }}" class="btn btn-app bg-danger">
+                                {{-- <a href="{{ route('admin.attendance.index') }}" class="btn btn-app bg-danger">
                                     <i class="fas fa-user-check"></i> Attendance
-                                </a>
+                                </a> --}}
                             </div>
                         </div>
 

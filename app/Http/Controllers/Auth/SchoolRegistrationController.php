@@ -36,7 +36,7 @@ class SchoolRegistrationController extends Controller
 
             $admin = User::create([
                 'name' => $request->admin_name,
-                'email' => $request->admin_email,
+                'email' => $request->school_email,
                 'password' => Hash::make($request->admin_password),
                 'school_id' => $school->id,
             ]);

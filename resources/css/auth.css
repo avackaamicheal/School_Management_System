@@ -132,6 +132,42 @@ body {
     font-weight: 400;
 }
 
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper .form-control {
+    padding-right: 2.75rem;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: hsl(231, 11%, 63%);
+    cursor: pointer;
+    padding: .25rem;
+    font-size: 16px;
+    line-height: 1;
+    transition: color .3s;
+    font-family: inherit;
+}
+
+.password-toggle:hover {
+    color: hsl(243, 100%, 62%);
+}
+
+.input-group .password-toggle {
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none;
+    cursor: pointer;
+}
+
 textarea.form-control {
     resize: vertical;
     min-height: 80px;

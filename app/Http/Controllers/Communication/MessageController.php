@@ -87,7 +87,7 @@ class MessageController extends Controller
         })->first();
 
         if ($existing) {
-            return redirect()->route('messages.show', $existing->id);
+            return redirect(resolveRoute('messages.show', $existing->id));
         }
 
         $thread = MessageThread::create([
@@ -95,6 +95,6 @@ class MessageController extends Controller
             'user_two_id' => $targetId,
         ]);
 
-        return redirect()->route('messages.show', $thread->id);
+        return redirect(resolveRoute('messages.show', $thread->id));
     }
 }

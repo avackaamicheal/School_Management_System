@@ -20,6 +20,7 @@
                         <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="{{ __('Password') }}">
                         <div class="input-group-append">
                             <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                            <button type="button" class="input-group-text password-toggle" tabindex="-1" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
                         </div>
                         @error('password')
                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>

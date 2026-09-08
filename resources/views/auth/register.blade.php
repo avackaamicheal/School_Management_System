@@ -45,12 +45,18 @@
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimum 8 characters" required>
+                        <div class="password-wrapper">
+                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimum 8 characters" required>
+                            <button type="button" class="password-toggle" tabindex="-1" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+                        </div>
                         @error('password') <span class="invalid-feedback">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
                         <label>Confirm Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" placeholder="Repeat your password" required>
+                        <div class="password-wrapper">
+                            <input type="password" name="password_confirmation" class="form-control" placeholder="Repeat your password" required>
+                            <button type="button" class="password-toggle" tabindex="-1" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+                        </div>
                     </div>
                     <button type="submit" class="btn-submit">Register</button>
                 </form>

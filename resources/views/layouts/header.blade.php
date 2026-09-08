@@ -20,10 +20,10 @@
                 <a href="{{ route('student.dashboard') }}" class="nav-link">Student Portal</a>
             @endrole
             @role('Parent')
-                <a href="{{ route('parent.dashboard') }}" class="nav-link">Family Portal</a>
+                <a href="{{ route('parent.dashboard') }}" class="nav-link">Parent Dashboard</a>
             @endrole
             @role('Bursar')
-                <a href="{{ route('bursar.dashboard') }}" class="nav-link">Bursar Portal</a>
+                <a href="{{ route('bursar.dashboard') }}" class="nav-link">Bursar Dashboard</a>
             @endrole
         </li>
 
@@ -206,6 +206,69 @@
                 </li>
             @endauth
 
+            @hasanyrole('SchoolAdmin|Teacher|Parent')
+                <li class="nav-item dropdown">
+                    @php
+                        $unreadMessages = \App\Models\Message::with(['thread.userOne', 'thread.userTwo'])
+                            ->whereNull('read_at')
+                            ->where('sender_id', '!=', auth()->id())
+                            ->whereHas('thread', function ($q) {
+                                $q->where('user_one_id', auth()->id())
+                                    ->orWhere('user_two_id', auth()->id());
+                            })
+                            ->latest()
+                            ->get()
+                            ->groupBy('message_thread_id');
+                        $unreadMessageCount = $unreadMessages->count();
+                    @endphp
+
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-envelope"></i>
+                        @if ($unreadMessageCount > 0)
+                            <span class="badge badge-danger navbar-badge">{{ $unreadMessageCount }}</span>
+                        @endif
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: 90vw;">
+                        <span class="dropdown-item dropdown-header">
+                            {{ $unreadMessageCount }} Unread Conversation{{ $unreadMessageCount != 1 ? 's' : '' }}
+                        </span>
+                        <div class="dropdown-divider"></div>
+
+                        @forelse($unreadMessages->take(5) as $messages)
+                            @php $latestMsg = $messages->first(); @endphp
+                            <a href="{{ resolveRoute('messages.show', $latestMsg->message_thread_id) }}" class="dropdown-item">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge badge-primary mr-2 p-2" style="min-width: 32px; text-align: center;">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <div style="min-width: 0;">
+                                        <div class="font-weight-bold text-sm text-truncate">
+                                            {{ $latestMsg->thread->user_one_id === auth()->id() ? $latestMsg->thread->userTwo->name : $latestMsg->thread->userOne->name }}
+                                        </div>
+                                        <small class="text-muted text-truncate d-block">
+                                            {{ Str::limit($latestMsg->body, 50) }}
+                                        </small>
+                                        <small class="text-muted">
+                                            {{ $latestMsg->created_at->diffForHumans() }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                        @empty
+                            <div class="dropdown-item text-center text-muted py-3">
+                                <i class="fas fa-envelope-open mr-1"></i> No new messages
+                            </div>
+                        @endforelse
+
+                        <a href="{{ resolveRoute('messages.index') }}" class="dropdown-item dropdown-footer text-center">
+                            <i class="fas fa-comments mr-1"></i> View all messages
+                        </a>
+                    </div>
+                </li>
+            @endhasanyrole
+
         @endauth
 
         @auth
@@ -309,25 +372,25 @@
                         @role('Teacher')
                             <a href="{{ route('teacher.dashboard') }}" class="nav-link @activeRoute('teacher.dashboard')"><i
                                     class="nav-icon fas fa-chalkboard-teacher"></i>
-                                <p>My Dashboard</p>
+                                <p>Dashboard</p>
                             </a>
                         @endrole
                         @role('Student')
                             <a href="{{ route('student.dashboard') }}" class="nav-link @activeRoute('student.dashboard')"><i
                                     class="nav-icon fas fa-user-graduate"></i>
-                                <p>Student Portal</p>
+                                <p>Dashboard</p>
                             </a>
                         @endrole
                         @role('Parent')
                             <a href="{{ route('parent.dashboard') }}" class="nav-link @activeRoute('parent.dashboard')"><i
                                     class="nav-icon fas fa-user-friends"></i>
-                                <p>Parent Portal</p>
+                                <p>Dashboard</p>
                             </a>
                         @endrole
                         @role('Bursar')
                             <a href="{{ route('bursar.dashboard') }}" class="nav-link @activeRoute('bursar.dashboard')"><i
                                     class="nav-icon fas fa-coins"></i>
-                                <p>Bursar Portal</p>
+                                <p>Dashboard</p>
                             </a>
                         @endrole
                     </li>
@@ -365,14 +428,10 @@
                                 class="nav-link @activeRoute('timetable.*')"><i class="nav-icon fas fa-calendar-week"></i>
                                 <p>Timetable</p>
                             </a></li>
-                        <li class="nav-item"><a href="{{ route('admin.attendance.index') }}"
+                        {{-- <li class="nav-item"><a href="{{ route('admin.attendance.index') }}"
                                 class="nav-link @activeRoute('attendance.*')"><i class="nav-icon fas fa-user-check"></i>
                                 <p>Attendance</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('admin.grades.index') }}"
-                                class="nav-link @activeRoute('grades.*')"><i class="nav-icon fas fa-graduation-cap"></i>
-                                <p>Grade</p>
-                            </a></li>
+                            </a></li> --}}
                         <li class="nav-item"><a href="{{ route('admin.assessments.index') }}"
                                 class="nav-link @activeRoute('assessments.*')"><i class="nav-icon fas fa-clipboard-list"></i>
                                 <p>Assessment</p>
@@ -524,6 +583,46 @@
                         </li>
                     @endrole
 
+                    @role('Parent')
+                        <li class="nav-header">FAMILY</li>
+                        <li class="nav-item">
+                            <a href="{{ route('parent.children.index') }}" class="nav-link @activeRoute('parent.children.*')">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>My Children</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parent.results.index') }}" class="nav-link @activeRoute('parent.results.*')">
+                                <i class="nav-icon fas fa-file-contract"></i>
+                                <p>Results / Report Card</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parent.attendance.index') }}" class="nav-link @activeRoute('parent.attendance.*')">
+                                <i class="nav-icon fas fa-user-check"></i>
+                                <p>Attendance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parent.timetable.index') }}" class="nav-link @activeRoute('parent.timetable.*')">
+                                <i class="nav-icon fas fa-calendar-week"></i>
+                                <p>Time Table</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parent.fees.index') }}" class="nav-link @activeRoute('parent.fees.*')">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <p>Fees & Payments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('parent.teachers.index') }}" class="nav-link @activeRoute('parent.teachers.*')">
+                                <i class="nav-icon fas fa-user-tie"></i>
+                                <p>Teachers</p>
+                            </a>
+                        </li>
+                    @endrole
+
                     @hasanyrole('SchoolAdmin|Teacher|Student|Parent')
                         <li class="nav-header">COMMUNICATION</li>
 
@@ -543,19 +642,36 @@
                         @endhasanyrole
 
                         @hasanyrole('Student|Parent')
-                            {{-- Build student/parent communication routes when needed --}}
+                            @role('Parent')
+                            <li class="nav-item">
+                                <a href="{{ resolveRoute('announcements.index') }}" class="nav-link @activeRoute('parent.announcements.*')">
+                                    <i class="nav-icon fas fa-bullhorn"></i>
+                                    <p>Announcements</p>
+                                </a>
+                            </li>
+                            @else
                             <li class="nav-item">
                                 <a href="#" class="nav-link disabled" tabindex="-1" aria-disabled="true">
                                     <i class="nav-icon fas fa-bullhorn"></i>
                                     <p>Announcements</p>
                                 </a>
                             </li>
+                            @endrole
+                            @role('Parent')
+                            <li class="nav-item">
+                                <a href="{{ resolveRoute('messages.index') }}" class="nav-link @activeRoute('parent.messages.*')">
+                                    <i class="nav-icon fas fa-envelope"></i>
+                                    <p>Messages</p>
+                                </a>
+                            </li>
+                            @else
                             <li class="nav-item">
                                 <a href="#" class="nav-link disabled" tabindex="-1" aria-disabled="true">
                                     <i class="nav-icon fas fa-envelope"></i>
                                     <p>Messages</p>
                                 </a>
                             </li>
+                            @endrole
                         @endhasanyrole
                     @endhasanyrole
 

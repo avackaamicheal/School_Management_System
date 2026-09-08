@@ -313,7 +313,7 @@
                         <fieldset>
                             <div class="step-header">
                                 <h2>Admin Account</h2>
-                                <p>Set up your administrator profile</p>
+                                <p>Set up your administrator profile. You'll sign in using your school's email with the password you choose below.</p>
                             </div>
                             <div class="step-body">
                                 <div class="form-group">
@@ -340,14 +340,15 @@
                                 </div>
                                 <div class="form-group">
                                     <label>
-                                        Your Email Address
-                                        @error('admin_email') <span class="error-text">{{ $message }}</span> @enderror
+                                        Login Email
+                                        @error('school_email') <span class="error-text">{{ $message }}</span> @enderror
                                     </label>
-                                    <input type="email" name="admin_email"
-                                        class="form-control @error('admin_email') input-error @enderror"
-                                        value="{{ old('admin_email') }}"
-                                        placeholder="you@email.com"
-                                        required>
+                                    <input type="email" name="school_email_readonly"
+                                        class="form-control"
+                                        value="{{ old('school_email') }}"
+                                        placeholder="info@school.com"
+                                        readonly>
+                                    <small class="text-muted">You'll sign in with the school email entered in Step 1.</small>
                                 </div>
                             </div>
                             <div class="step-footer">
@@ -368,8 +369,11 @@
                                         Password
                                         @error('admin_password') <span class="error-text">{{ $message }}</span> @enderror
                                     </label>
-                                    <input type="password" name="admin_password"
-                                        class="form-control @error('admin_password') input-error @enderror" required>
+                                    <div class="password-wrapper">
+                                        <input type="password" name="admin_password"
+                                            class="form-control @error('admin_password') input-error @enderror" required>
+                                        <button type="button" class="password-toggle" tabindex="-1" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+                                    </div>
                                     <small class="text-muted">Minimum 8 characters.</small>
                                 </div>
                                 <div class="form-group">
@@ -377,9 +381,11 @@
                                         Confirm Password
                                         @error('admin_password_confirmation') <span class="error-text">{{ $message }}</span> @enderror
                                     </label>
-                                    <input type="password" name="admin_password_confirmation"
-                                        class="form-control @error('admin_password_confirmation') input-error @enderror" required>
-                                </div>
+                                    <div class="password-wrapper">
+                                        <input type="password" name="admin_password_confirmation"
+                                            class="form-control @error('admin_password_confirmation') input-error @enderror" required>
+                                        <button type="button" class="password-toggle" tabindex="-1" aria-label="Toggle password visibility"><i class="fas fa-eye"></i></button>
+                                    </div>
                             </div>
                             <div class="step-footer">
                                 <button type="button" class="btn-previous btn-previous-step"><i class="fas fa-arrow-left mr-1"></i> Go Back</button>
@@ -439,6 +445,10 @@
             $('.btn-next-step').on('click', function() {
                 var $current = $(this).closest('fieldset');
                 if (!validateFieldset($current)) return;
+
+                if ($current.is(':first-child')) {
+                    $('[name="school_email_readonly"]').val($('[name="school_email"]').val());
+                }
 
                 var $next = $current.next('fieldset');
                 if ($next.length) {
