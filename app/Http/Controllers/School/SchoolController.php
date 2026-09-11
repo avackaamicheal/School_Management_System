@@ -21,6 +21,8 @@ class SchoolController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', School::class);
+
         $schools = School::all();
 
         return view('school.index', compact('schools'));
@@ -31,6 +33,8 @@ class SchoolController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', School::class);
+
         return view('school.create');
     }
 
@@ -39,6 +43,8 @@ class SchoolController extends Controller
      */
     public function store(StoreSchoolRequest $request)
     {
+        $this->authorize('create', School::class);
+
         $validatedData = $request->validated();
 
 
@@ -52,6 +58,8 @@ class SchoolController extends Controller
      */
     public function show(School $school)
     {
+        $this->authorize('view', $school);
+
         $admin = Auth::user();
         return view('school.show', compact('school', 'admin'));
     }
@@ -61,6 +69,8 @@ class SchoolController extends Controller
      */
     public function edit(School $school)
     {
+        $this->authorize('update', $school);
+
         return view('school.edit', compact('school'));
     }
 
@@ -69,6 +79,8 @@ class SchoolController extends Controller
      */
     public function update(UpdateSchoolRequest $request, School $school)
     {
+        $this->authorize('update', $school);
+
         $validatedData = $request->validated();
 
         if ($request->hasFile('logo')) {
@@ -109,6 +121,8 @@ class SchoolController extends Controller
      */
     public function destroy(School $school)
     {
+        $this->authorize('delete', $school);
+
         $school->delete();
 
         return redirect()->route('school.index')->with('success', 'School deleted successfully');
@@ -116,6 +130,8 @@ class SchoolController extends Controller
 
     public function approve(School $school)
     {
+        $this->authorize('approve', $school);
+
         $school->update([
             'is_active' => true,
             'approval_status' => 'approved',
@@ -136,6 +152,8 @@ class SchoolController extends Controller
 
     public function reject(Request $request, School $school)
     {
+        $this->authorize('reject', $school);
+
         $request->validate([
             'rejection_reason' => 'required|string|max:500',
         ]);
@@ -160,6 +178,8 @@ class SchoolController extends Controller
 
     public function deactivate(School $school)
     {
+        $this->authorize('deactivate', $school);
+
         $school->update([
             'is_active' => false,
             'approval_status' => 'rejected',
@@ -183,6 +203,8 @@ class SchoolController extends Controller
 
     public function reactivate(School $school)
     {
+        $this->authorize('reactivate', $school);
+
         // Only reactivate if they have a valid subscription
         if (!$school->hasActiveSubscription()) {
             return back()->with('error', "{$school->name} has no active subscription. They must renew first.");

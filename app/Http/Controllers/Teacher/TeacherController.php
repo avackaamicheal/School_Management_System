@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class TeacherController extends Controller
 {
@@ -95,12 +96,16 @@ class TeacherController extends Controller
 
     public function edit(School $school, User $teacher)
     {
+        $this->authorize('viewTeacher', $teacher);
+
         $teacher->load('teacherProfile');
         return view('teacher.edit', compact('teacher'));
     }
 
     public function update(UpdateTeacherRequest $request, School $school, User $teacher)
     {
+        $this->authorize('updateTeacher', $teacher);
+
         $teacher->update([
             'name' => $request->name,
             'email' => $request->email,
@@ -135,6 +140,8 @@ class TeacherController extends Controller
 
     public function destroy(School $school, User $teacher)
     {
+        $this->authorize('deleteTeacher', $teacher);
+
         if ($teacher->teacherProfile?->profile_picture) {
             Storage::disk('public')->delete($teacher->teacherProfile->profile_picture);
         }
@@ -163,9 +170,11 @@ class TeacherController extends Controller
 
     public function assign(School $school, User $teacher, Request $request)
     {
+        $this->authorize('updateTeacher', $teacher);
+
         $request->validate([
-            'subject_id' => 'required|exists:subjects,id',
-            'section_id' => 'required|exists:sections,id',
+            'subject_id' => ['required', Rule::exists('subjects', 'id')->where('school_id', session('active_school'))],
+            'section_id' => ['required', Rule::exists('sections', 'id')->where('school_id', session('active_school'))],
         ]);
 
         try {
@@ -193,6 +202,16 @@ class TeacherController extends Controller
 
     public function destroyAllocation(School $school, User $teacher, ClassroomAssignment $allocation, Request $request)
     {
+        $this->authorize('updateTeacher', $teacher);
+
+        if ((int) $allocation->teacher_id !== (int) $teacher->id) {
+            abort(403, 'This assignment does not belong to this teacher.');
+        }
+
+        if ((int) $allocation->school_id !== (int) session('active_school')) {
+            abort(403, 'Assignment does not belong to this school.');
+        }
+
         $allocation->delete();
 
         if ($request->wantsJson()) {
@@ -205,10 +224,13 @@ class TeacherController extends Controller
     public function storeAllocation(School $school, Request $request)
     {
         $request->validate([
-            'teacher_id' => 'required|exists:users,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'section_id' => 'required|exists:sections,id',
+            'teacher_id' => ['required', Rule::exists('users', 'id')->where('school_id', session('active_school'))],
+            'subject_id' => ['required', Rule::exists('subjects', 'id')->where('school_id', session('active_school'))],
+            'section_id' => ['required', Rule::exists('sections', 'id')->where('school_id', session('active_school'))],
         ]);
+
+        $teacher = User::whereKey($request->teacher_id)->firstOrFail();
+        $this->authorize('updateTeacher', $teacher);
 
         try {
             $allocation = ClassroomAssignment::create([
@@ -236,11 +258,18 @@ class TeacherController extends Controller
 
     public function updateAllocation(School $school, ClassroomAssignment $allocation, Request $request)
     {
+        if ((int) $allocation->school_id !== (int) session('active_school')) {
+            abort(403, 'Assignment does not belong to this school.');
+        }
+
         $request->validate([
-            'teacher_id' => 'required|exists:users,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'section_id' => 'required|exists:sections,id',
+            'teacher_id' => ['required', Rule::exists('users', 'id')->where('school_id', session('active_school'))],
+            'subject_id' => ['required', Rule::exists('subjects', 'id')->where('school_id', session('active_school'))],
+            'section_id' => ['required', Rule::exists('sections', 'id')->where('school_id', session('active_school'))],
         ]);
+
+        $teacher = User::whereKey($request->teacher_id)->firstOrFail();
+        $this->authorize('updateTeacher', $teacher);
 
         try {
             $allocation->update([

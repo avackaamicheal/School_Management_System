@@ -75,6 +75,12 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
+        // Section ownership checked BEFORE any query runs.
+        $allowedSectionIds = Auth::user()->allowedSectionIds();
+        if (! in_array((int) $request->input('section_id'), $allowedSectionIds, true)) {
+            abort(403, 'Unauthorized: You are not assigned to this classroom.');
+        }
+
         $request->validate([
             'section_id' => 'required|exists:sections,id',
             'date' => 'required|date|before_or_equal:today',
@@ -83,6 +89,22 @@ class AttendanceController extends Controller
             'remarks' => 'nullable|array',
             'remarks.*' => 'nullable|string|max:255',
         ]);
+
+        // Verify every submitted student belongs to the requested section.
+        $studentIds = array_keys($request->input('attendance', []));
+        if (! empty($studentIds)) {
+            $validCount = User::role('Student')
+                ->whereIn('id', $studentIds)
+                ->where('school_id', session('active_school'))
+                ->whereHas('studentProfile', function ($query) use ($request) {
+                    $query->where('section_id', $request->section_id);
+                })
+                ->count();
+
+            if ($validCount !== count($studentIds)) {
+                abort(403, 'Unauthorized: You can only record attendance for students in your assigned classroom.');
+            }
+        }
 
         $activeTerm = Term::getActive();
 
@@ -124,6 +146,11 @@ class AttendanceController extends Controller
 
     public function export(Request $request)
     {
+        $allowedSectionIds = Auth::user()->allowedSectionIds();
+        if (! in_array((int) $request->input('section_id'), $allowedSectionIds, true)) {
+            abort(403, 'Unauthorized: You are not assigned to this classroom.');
+        }
+
         $request->validate([
             'section_id' => 'required|exists:sections,id',
             'date' => 'required|date',

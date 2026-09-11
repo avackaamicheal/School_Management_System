@@ -25,18 +25,18 @@ class StoreSectionRequest extends FormRequest
         return [
             'class_level_id' => [
                 'required',
-                'exists:class_levels,id' // Basic check
+                Rule::exists('class_levels', 'id')->where('school_id', session('active_school')),
             ],
             'name' => [
                 'required',
                 'string',
                 'max:50',
-                // COMPOSITE UNIQUE CHECK:
-                // "For this specific Class Level, the Name must be unique."
+                // COMPOSITE UNIQUE CHECK scoped to school + class level.
                 Rule::unique('sections')
                     ->where('class_level_id', $this->class_level_id)
+                    ->where('school_id', session('active_school')),
             ],
-            'capacity' => ['required','integer', 'min:1',]
+            'capacity' => ['required', 'integer', 'min:1', 'max:500']
         ];
     }
 }

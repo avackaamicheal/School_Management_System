@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Communication;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\MessageThread;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class MessageController extends Controller
 {
@@ -15,7 +17,8 @@ class MessageController extends Controller
     {
         $userId = Auth::id();
 
-        // Get all threads this user belongs to, ordered by the latest message
+        // Get all threads this user belongs to, ordered by the latest message.
+        // Grouped where clause: school scope applies to both branches.
         $threads = MessageThread::with([
             'userOne',
             'userTwo',
@@ -23,8 +26,10 @@ class MessageController extends Controller
                 $q->latest()->limit(1);
             }
         ])
-            ->where('user_one_id', $userId)
-            ->orWhere('user_two_id', $userId)
+            ->where(function ($q) use ($userId) {
+                $q->where('user_one_id', $userId)
+                    ->orWhere('user_two_id', $userId);
+            })
             ->get()
             ->sortByDesc(function ($thread) {
                 return $thread->messages->first()->created_at ?? $thread->created_at;
@@ -34,6 +39,8 @@ class MessageController extends Controller
 
         if ($threadId) {
             $activeThread = MessageThread::with('messages.sender')->findOrFail($threadId);
+
+            $this->authorize('view', $activeThread);
 
             // Mark all unread messages from the OTHER user as read
             Message::where('message_thread_id', $activeThread->id)
@@ -48,9 +55,11 @@ class MessageController extends Controller
     // 2. Send a Message
     public function store(Request $request, $school, MessageThread $thread)
     {
+        $this->authorize('reply', $thread);
+
         $request->validate([
-            'body' => 'required_without:attachment|string|nullable',
-            'attachment' => 'nullable|file|max:5120', // 5MB max
+            'body' => 'required_without:attachment|string|nullable|max:5000',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
         ]);
 
         $attachmentPath = null;
@@ -74,10 +83,19 @@ class MessageController extends Controller
     // In MessageController
     public function createThread(Request $request, $school)
     {
-        $request->validate(['user_id' => 'required|exists:users,id']);
+        $request->validate(['user_id' => ['required', Rule::exists('users', 'id')->where('school_id', session('active_school'))]]);
 
         $userId = Auth::id();
         $targetId = $request->user_id;
+
+        if ((int) $targetId === (int) $userId) {
+            return back()->with('error', 'You cannot start a conversation with yourself.');
+        }
+
+        $target = User::whereKey($targetId)->firstOrFail();
+        if ((int) $target->school_id !== (int) session('active_school')) {
+            abort(403, 'You can only message users in your school.');
+        }
 
         // Check if thread already exists
         $existing = MessageThread::where(function ($q) use ($userId, $targetId) {

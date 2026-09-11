@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\PaymentReceivedNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
@@ -18,11 +19,14 @@ class PaymentController extends Controller
     public function index(School $school, Request $request)
     {
         $invoices = Invoice::with(['student.studentProfile', 'payments'])
+            ->where('school_id', session('active_school'))
             ->when($request->search, function ($q) use ($request) {
-                $q->where('invoice_number', 'like', "%{$request->search}%")
-                    ->orWhereHas('student', function ($q) use ($request) {
-                        $q->where('name', 'like', "%{$request->search}%");
-                    });
+                $q->where(function ($q) use ($request) {
+                    $q->where('invoice_number', 'like', "%{$request->search}%")
+                        ->orWhereHas('student', function ($q) use ($request) {
+                            $q->where('name', 'like', "%{$request->search}%");
+                        });
+                });
             })
             ->when($request->status, function ($q) use ($request) {
                 $q->where('status', $request->status);
@@ -37,27 +41,45 @@ class PaymentController extends Controller
     // 2. Process a Payment
     public function store(Request $request, $school, Invoice $invoice)
     {
+        $this->authorize('pay', $invoice);
+
         $request->validate([
             'amount' => 'required|numeric|min:1|max:' . $invoice->balance(),
-            'method' => 'required|string',
-            'reference' => 'nullable|string',
-            'payment_date' => 'required|date',
+            'method' => 'required|string|max:50',
+            'reference' => 'nullable|string|max:255',
+            'payment_date' => 'required|date|before_or_equal:today',
+            'payment_proof' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Record payment
-        $payment = Payment::create([
-            'invoice_id' => $invoice->id,
-            'amount' => $request->amount,
-            'method' => $request->method,
-            'reference' => $request->reference,
-            'payment_date' => $request->payment_date,
-        ]);
+        $proofPath = null;
+        if ($request->hasFile('payment_proof')) {
+            $proofPath = $request->file('payment_proof')->store('payment-proofs', 'public');
+        }
 
-        // Refresh invoice and update status
-        $invoice->refresh();
-        $invoice->update([
-            'status' => $invoice->balance() <= 0 ? 'PAID' : 'PARTIAL'
-        ]);
+        // Record payment atomically with row lock to avoid balance TOCTOU.
+        $payment = DB::transaction(function () use ($request, $invoice, $proofPath) {
+            $lockedInvoice = Invoice::whereKey($invoice->id)->lockForUpdate()->firstOrFail();
+
+            if ($request->amount > $lockedInvoice->balance()) {
+                abort(422, 'Payment amount exceeds invoice balance.');
+            }
+
+            $created = Payment::create([
+                'invoice_id' => $lockedInvoice->id,
+                'amount' => $request->amount,
+                'method' => $request->method,
+                'reference' => $request->reference,
+                'payment_proof' => $proofPath,
+                'payment_date' => $request->payment_date,
+            ]);
+
+            $lockedInvoice->refresh();
+            $lockedInvoice->update([
+                'status' => $lockedInvoice->balance() <= 0 ? 'PAID' : 'PARTIAL'
+            ]);
+
+            return $created;
+        });
 
         // Notify parents and admin — wrapped separately
         try {
@@ -83,6 +105,8 @@ class PaymentController extends Controller
     // 3. Generate PDF Receipt
     public function receipt(School $school, Payment $payment)
     {
+        $this->authorize('viewReceipt', $payment);
+
         // Load relationships needed for the receipt
         $payment->load(['invoice.student.studentProfile', 'invoice.items']);
 

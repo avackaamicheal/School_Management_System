@@ -10,19 +10,37 @@ use App\Models\Term;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportCardController extends Controller
 {
     // 1. Show the Class Selection and Student List
     public function index(Request $request, School $school)
     {
-        $sections = Section::with('classLevel')->get();
+        $user = Auth::user();
+        $allowedSectionIds = $user->allowedSectionIds();
+
+        // SchoolAdmin sees active-school sections via scope; Teacher sees assigned.
+        // Students/Parents have no class-list access here (use portals).
+        if ($user->hasRole('Student') || $user->hasRole('Parent')) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $sections = Section::with('classLevel')
+            ->when(! $user->hasRole('SuperAdmin'), function ($q) use ($allowedSectionIds) {
+                $q->whereIn('id', $allowedSectionIds);
+            })
+            ->get();
         $selectedSection = null;
         $students = collect();
 
         if ($request->has('section_id')) {
+            if (! $user->hasRole('SuperAdmin') && ! in_array((int) $request->section_id, $allowedSectionIds, true)) {
+                abort(403, 'Unauthorized: You are not assigned to this classroom.');
+            }
+
             $selectedSection = Section::find($request->section_id);
-            $activeTerm = Term::where('is_active', true)->first();
+            $activeTerm = Term::getActive();
 
             $students = User::role('Student')
                 ->whereHas('studentProfile', function ($query) use ($selectedSection) {
@@ -43,8 +61,23 @@ class ReportCardController extends Controller
     // 2. Download a Single Student's Report
     public function downloadSingle(Request $request, School $school, $studentId)
     {
+        $user = Auth::user();
         $student = User::with('studentProfile')->findOrFail($studentId);
-        $activeTerm = Term::where('is_active', true)->firstOrFail();
+
+        $this->authorize('viewStudent', $student);
+
+        // Teachers may only download reports for sections they teach.
+        if ($user->hasRole('Teacher')) {
+            $studentSectionId = $student->studentProfile?->section_id;
+            if (! in_array((int) $studentSectionId, $user->allowedSectionIds(), true)) {
+                abort(403, 'Unauthorized: You are not assigned to this student\'s classroom.');
+            }
+        }
+
+        $activeTerm = Term::getActive();
+        if (! $activeTerm) {
+            abort(404, 'No active term found.');
+        }
 
         $grades = GradeRecord::with('subject')
             ->where('student_id', $student->id)
@@ -62,8 +95,17 @@ class ReportCardController extends Controller
     // 3. Batch Download an Entire Class
     public function downloadBatch(Request $request, School $school, $sectionId)
     {
+        $user = Auth::user();
+
+        if (! $user->hasRole('SuperAdmin') && ! in_array((int) $sectionId, $user->allowedSectionIds(), true)) {
+            abort(403, 'Unauthorized: You are not assigned to this classroom.');
+        }
+
         $section = Section::with('classLevel')->findOrFail($sectionId);
-        $activeTerm = Term::where('is_active', true)->firstOrFail();
+        $activeTerm = Term::getActive();
+        if (! $activeTerm) {
+            abort(404, 'No active term found.');
+        }
 
         $students = User::role('Student')->whereHas('studentProfile', function ($query) use ($section) {
             $query->where('section_id', $section->id);

@@ -96,6 +96,14 @@ class GradeEntryController extends Controller
 
     public function store(Request $request, School $school)
     {
+        $request->validate([
+            'section_id' => 'required|integer|exists:sections,id',
+            'subject_id' => 'required|integer|exists:subjects,id',
+            'grades' => 'required|array',
+            'grades.*' => 'required|array',
+            'grades.*.*' => 'required|numeric|min:0|max:100',
+        ]);
+
         $activeTerm = Term::getActive();
 
         if (!$activeTerm) {
@@ -118,6 +126,7 @@ class GradeEntryController extends Controller
         if (!empty($studentIds)) {
             $assignedStudentsCount = User::role('Student')
                 ->whereIn('id', $studentIds)
+                ->where('school_id', session('active_school'))
                 ->whereHas('studentProfile', function ($query) use ($request) {
                     $query->where('section_id', $request->section_id);
                 })
@@ -126,6 +135,17 @@ class GradeEntryController extends Controller
             if ($assignedStudentsCount !== count($studentIds)) {
                 abort(403, 'Unauthorized: You can only grade students in your assigned classes.');
             }
+        }
+
+        // Prevent overwriting locked grade sheets.
+        $lockedExists = GradeRecord::where('term_id', $activeTerm->id)
+            ->where('section_id', $request->section_id)
+            ->where('subject_id', $request->subject_id)
+            ->where('is_locked', true)
+            ->exists();
+
+        if ($lockedExists && ! $request->has('publish_grades')) {
+            return back()->with('error', 'This grade sheet is locked and cannot be edited.');
         }
 
         $lockGrades = $request->has('publish_grades');

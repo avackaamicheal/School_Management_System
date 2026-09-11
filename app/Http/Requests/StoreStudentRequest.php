@@ -24,28 +24,29 @@ class StoreStudentRequest extends FormRequest
     {
         return [
             // Student Bio
-            'first_name' => ['required','string','max:255'],
-            'last_name' => ['required','string','max:255'],
-            'email' => ['nullable','email', 'unique:users,email'], // Optional for younger students
-            'dob' => ['required','date'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'unique:users,email'], // Optional for younger students
+            'dob' => ['required', 'date', 'before:today'],
             'gender' => ['required', 'in:Male,Female'],
-            'address' => ['nullable', 'string'],
+            'address' => ['nullable', 'string', 'max:500'],
 
             // Academic Info
             'admission_number' => [
                 'required',
                 'string',
-                // Unique within the school context (or globally, depending on your pref)
+                'max:50',
                 Rule::unique('student_profiles', 'admission_number')
+                    ->where('school_id', session('active_school')),
             ],
-            'class_level_id' => ['required', 'exists:class_levels,id'],
-            'section_id' => ['required', 'exists:sections,id'],
+            'class_level_id' => ['required', Rule::exists('class_levels', 'id')->where('school_id', session('active_school'))],
+            'section_id' => ['required', Rule::exists('sections', 'id')->where('school_id', session('active_school'))],
 
             // Parent Info (We check parent email to see if they already exist)
-            'parent_email' => ['required', 'email'],
-            'alt_phone' => ['required', 'string'],
-            'parent_name' => ['required', 'string'],
-            'relationship' => ['required', 'string'], // Father, Mother, Guardian
+            'parent_email' => ['required', 'email', 'max:255'],
+            'alt_phone' => ['required', 'string', 'max:20'],
+            'parent_name' => ['required', 'string', 'max:255'],
+            'relationship' => ['required', 'in:Father,Mother,Guardian'],
         ];
     }
 }
