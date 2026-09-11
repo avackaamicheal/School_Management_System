@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AssessmentWeight;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AssessmentWeightController extends Controller
 {
@@ -27,8 +28,8 @@ class AssessmentWeightController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'subject_id' => 'required|exists:subjects,id',
-            'categories' => 'required|array',
+            'subject_id' => ['required', Rule::exists('subjects', 'id')->where('school_id', session('active_school'))],
+            'categories' => 'required|array|max:20',
             'categories.*.name' => 'required|string|max:255',
             'categories.*.weight' => 'required|numeric|min:1|max:100',
         ]);

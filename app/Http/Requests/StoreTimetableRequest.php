@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTimetableRequest extends FormRequest
 {
@@ -22,12 +23,12 @@ class StoreTimetableRequest extends FormRequest
     public function rules(): array
     {
         return [
-           'section_id'  => ['required','exists:sections,id'],
-            'subject_id'  => ['required','exists:subjects,id'],
-            'teacher_id'  => 'required|exists:users,id',
-            'day_of_week' => ['required','in:Monday,Tuesday,Wednesday,Thursday,Friday'],
-            'start_time'  => ['required','date_format:H:i'],
-            'end_time'    => ['required','date_format:H:i','after:start_time'],
+            'section_id'  => ['required', Rule::exists('sections', 'id')->where('school_id', session('active_school'))],
+            'subject_id'  => ['required', Rule::exists('subjects', 'id')->where('school_id', session('active_school'))],
+            'teacher_id'  => ['required', Rule::exists('users', 'id')->where('school_id', session('active_school'))],
+            'day_of_week' => ['required', 'in:Monday,Tuesday,Wednesday,Thursday,Friday'],
+            'start_time'  => ['required', 'date_format:H:i'],
+            'end_time'    => ['required', 'date_format:H:i', 'after:start_time'],
         ];
     }
 }

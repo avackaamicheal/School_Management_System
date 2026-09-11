@@ -8,6 +8,7 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use App\Models\ClassroomAssignment;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 
 class ClassroomAssignmentController extends Controller
 {
@@ -31,13 +32,13 @@ class ClassroomAssignmentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'teacher_id' => 'required|exists:users,id',
-            'section_id' => 'required|exists:sections,id',
-            'subject_id' => 'required|exists:subjects,id',
+            'teacher_id' => ['required', Rule::exists('users', 'id')->where('school_id', session('active_school'))],
+            'section_id' => ['required', Rule::exists('sections', 'id')->where('school_id', session('active_school'))],
+            'subject_id' => ['required', Rule::exists('subjects', 'id')->where('school_id', session('active_school'))],
         ]);
 
         try {
-            ClassroomAssignment::create($request->all());
+            ClassroomAssignment::create($request->only(['teacher_id', 'section_id', 'subject_id']));
 
             return response()->json([
                 'status' => 'success',
@@ -54,6 +55,10 @@ class ClassroomAssignmentController extends Controller
 
     public function destroy(ClassroomAssignment $assignment)
     {
+        if ((int) $assignment->school_id !== (int) session('active_school')) {
+            abort(403, 'Assignment does not belong to this school.');
+        }
+
         $assignment->delete();
 
         if (request()->expectsJson()) {

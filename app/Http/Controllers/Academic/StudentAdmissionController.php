@@ -64,6 +64,8 @@ class StudentAdmissionController extends Controller
 
     public function show(School $school, User $student)
     {
+        $this->authorize('viewStudent', $student);
+
         $student->load(['studentProfile.section.classLevel', 'parents']);
         return view('student.show', compact('student'));
     }
@@ -181,6 +183,8 @@ class StudentAdmissionController extends Controller
 
     public function edit(School $school, User $student)
     {
+        $this->authorize('viewStudent', $student);
+
         $classLevels = ClassLevel::with('sections')->get();
         $student->load(['studentProfile']);
         return view('student.edit', compact('student', 'classLevels'));
@@ -188,6 +192,8 @@ class StudentAdmissionController extends Controller
 
     public function update(UpdateStudentRequest $request, School $school, User $student)
     {
+        $this->authorize('viewStudent', $student);
+
         $student->update([
             'name' => $request->first_name . ' ' . $request->last_name,
             'email' => $request->email,
@@ -209,6 +215,8 @@ class StudentAdmissionController extends Controller
 
     public function destroy(User $student)
     {
+        $this->authorize('deleteStudent', $student);
+
         // Due to 'cascadeOnDelete' in migrations, deleting the User
         // automatically wipes their Profile and Parent links.
         $student->delete();
@@ -238,10 +246,11 @@ class StudentAdmissionController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|max:5120', // Just ensure it's a file and under 5MB
+            'file' => 'required|file|mimes:csv,xlsx,xls|max:5120',
         ], [
             'file.required' => 'Please select a file to upload.',
             'file.file' => 'The uploaded item must be a valid file.',
+            'file.mimes' => 'Only CSV or Excel files are allowed.',
         ]);
 
         try {

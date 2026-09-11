@@ -93,7 +93,7 @@
                             <div class="modal fade" id="payModal{{ $invoice->id }}" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form action="{{ resolveRoute('payments.store', $invoice->id) }}" method="POST">
+                                        <form action="{{ resolveRoute('payments.store', $invoice->id) }}" method="POST" enctype="multipart/form-data">
                                             @csrf
                                             <div class="modal-header bg-primary text-white">
                                                 <h5 class="modal-title">Record Payment:
@@ -128,6 +128,12 @@
                                                     <label>Payment Date</label>
                                                     <input type="date" name="payment_date" class="form-control"
                                                         value="{{ date('Y-m-d') }}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Payment Proof (picture evidence — optional)</label>
+                                                    <input type="file" name="payment_proof" class="form-control-file"
+                                                        accept="image/jpeg,image/png,image/jpg">
+                                                    <small class="form-text text-muted">JPG/PNG, max 2MB.</small>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">

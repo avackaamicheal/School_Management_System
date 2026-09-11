@@ -14,6 +14,7 @@ use App\Notifications\InvoiceGeneratedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class FeeController extends Controller
 {
@@ -33,9 +34,9 @@ class FeeController extends Controller
     public function store(Request $request, School $school)
     {
         $request->validate([
-            'class_level_id' => 'required|exists:class_levels,id',
+            'class_level_id' => ['required', Rule::exists('class_levels', 'id')->where('school_id', session('active_school'))],
             'name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:0|max:10000000',
         ]);
 
         $activeTerm = Term::getActive();
@@ -53,11 +54,16 @@ class FeeController extends Controller
     public function generateInvoices(Request $request, School $school)
     {
         $request->validate([
-            'class_level_id' => 'required|exists:class_levels,id',
-            'due_date' => 'required|date',
+            'class_level_id' => ['required', Rule::exists('class_levels', 'id')->where('school_id', session('active_school'))],
+            'due_date' => 'required|date|after_or_equal:today',
         ]);
 
         $activeTerm = Term::getActive();
+
+        if (! $activeTerm) {
+            return back()->with('error', 'No active term found for this school.');
+        }
+
         $classLevelId = $request->class_level_id;
 
         // 1. Get the configured fees for this class
@@ -69,10 +75,13 @@ class FeeController extends Controller
             return back()->with('error', 'No fees configured for this class level.');
         }
 
-        // 2. Get all students in this class level
-        $students = User::role('Student')->whereHas('studentProfile.section', function ($query) use ($classLevelId) {
-            $query->where('class_level_id', $classLevelId);
-        })->get();
+        // 2. Get all students in this class level — strictly within active school.
+        // User has no global SchoolScope, so explicit filter is required.
+        $students = User::role('Student')
+            ->where('school_id', session('active_school'))
+            ->whereHas('studentProfile.section', function ($query) use ($classLevelId) {
+                $query->where('class_level_id', $classLevelId);
+            })->get();
 
         $generatedCount = 0;
 
@@ -94,10 +103,6 @@ class FeeController extends Controller
                     'due_date' => $request->due_date,
                     'status' => 'UNPAID',
                 ]);
-
-                foreach ($student->parents as $parent) {
-                    $parent->notify(new InvoiceGeneratedNotification($invoice));
-                }
 
                 // Create the individual line items
                 foreach ($fees as $fee) {

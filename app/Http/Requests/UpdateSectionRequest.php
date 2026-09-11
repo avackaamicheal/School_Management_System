@@ -25,19 +25,20 @@ class UpdateSectionRequest extends FormRequest
         return [
             'class_level_id' => [
                 'required',
-                'exists:class_levels,id'
+                Rule::exists('class_levels', 'id')->where('school_id', session('active_school')),
             ],
             'name' => [
                 'required',
                 'string',
                 'max:50',
-                // COMPOSITE UNIQUE CHECK (Update Version)
+                // COMPOSITE UNIQUE CHECK (Update Version) scoped to school.
                 Rule::unique('sections')
                     ->where('class_level_id', $this->class_level_id)
+                    ->where('school_id', session('active_school'))
                     // The Magic Line: Ignore the ID of the section currently being updated
                     ->ignore($this->section)
             ],
-            'capacity' => ['required','integer','min:1',],
+            'capacity' => ['required', 'integer', 'min:1', 'max:500'],
             'is_active' => ['boolean']
         ];
     }

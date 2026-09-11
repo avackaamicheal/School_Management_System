@@ -22,11 +22,12 @@ class StoreSchoolRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>['required', 'string'],
-            'email'=> ['required', 'unique:schools,email'],
-            'address'=>['required', 'string', 'max:255'],
-            'principal_name'=>['required', 'string'],
-            'phone_number' => ['required', 'string']
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:schools,email'],
+            'address' => ['required', 'string', 'max:255'],
+            'principal_name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:20'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
 
         ];
     }

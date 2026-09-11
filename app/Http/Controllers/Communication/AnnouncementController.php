@@ -15,11 +15,27 @@ class AnnouncementController extends Controller
 {
     public function index(Request $request, School $school)
     {
+        $user = Auth::user();
+
         $announcements = Announcement::with('author')
+            ->where('school_id', session('active_school'))
             ->where('publish_at', '<=', now())
             ->where(function ($query) {
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>=', now());
+            })
+            // target_role filtering enforced server-side; cannot be bypassed by URL.
+            ->where(function ($query) use ($user) {
+                $query->whereNull('target_role')
+                    ->orWhere('target_role', '');
+                foreach (['Student', 'Teacher', 'Parent', 'SchoolAdmin', 'Bursar'] as $role) {
+                    if ($user->hasRole($role)) {
+                        $query->orWhere('target_role', $role);
+                    }
+                }
+                if ($user->hasRole('SuperAdmin')) {
+                    $query->orWhereNotNull('target_role');
+                }
             })
             ->latest()
             ->get();
@@ -28,10 +44,12 @@ class AnnouncementController extends Controller
 
     public function store(Request $request, School $school)
     {
+        $this->authorize('create', Announcement::class);
+
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'target_role' => 'nullable|string',
+            'content' => 'required|string|max:10000',
+            'target_role' => 'nullable|in:Student,Teacher,Parent,SchoolAdmin,Bursar',
             'publish_at' => 'nullable|date',
             'expires_at' => 'nullable|date|after_or_equal:publish_at',
         ]);
@@ -60,7 +78,10 @@ class AnnouncementController extends Controller
     }
 
     public function destroy(Request $request, $school, Announcement $announcement)
-    {        $announcement->delete();
+    {
+        $this->authorize('delete', $announcement);
+
+        $announcement->delete();
         return back()->with('success', 'Announcement deleted.');
     }
 }

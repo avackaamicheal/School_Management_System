@@ -10,6 +10,7 @@ use App\Models\School;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class ParentController extends Controller
 {
@@ -61,6 +62,8 @@ class ParentController extends Controller
 
     public function show(School $school, User $parent)
     {
+        $this->authorize('viewParent', $parent);
+
         $parent->load([
             'parentProfile',
             'children.studentProfile.section.classLevel',
@@ -77,6 +80,8 @@ class ParentController extends Controller
 
     public function edit(School $school, User $parent)
     {
+        $this->authorize('viewParent', $parent);
+
         $parent->load('parentProfile');
 
         $nameParts = explode(' ', trim($parent->name), 2);
@@ -88,6 +93,8 @@ class ParentController extends Controller
 
     public function update(UpdateParentRequest $request,School $school, User $parent)
     {
+        $this->authorize('updateParent', $parent);
+
         //dd($request->validated(), $parent->id, $parent->parentProfile);
         $parent->update([
             'name' => $request->first_name . ' ' . $request->last_name,
@@ -138,10 +145,15 @@ class ParentController extends Controller
 
     public function linkChild(Request $request, School $school, User $parent)
     {
+        $this->authorize('updateParent', $parent);
+
         $request->validate([
-            'student_id' => 'required|exists:users,id',
+            'student_id' => ['required', Rule::exists('users', 'id')->where('school_id', session('active_school'))],
             'relationship' => 'required|in:Father,Mother,Guardian',
         ]);
+
+        $student = User::whereKey($request->student_id)->firstOrFail();
+        $this->authorize('viewStudent', $student);
 
         // Prevent duplicate link
         if ($parent->children()->where('child_id', $request->student_id)->exists()) {
@@ -157,6 +169,8 @@ class ParentController extends Controller
 
     public function destroy(School $school, User $parent)
     {
+        $this->authorize('updateParent', $parent);
+
         $parent->children()->detach();
         $parent->parentProfile()->delete();
         $parent->delete();
@@ -167,6 +181,14 @@ class ParentController extends Controller
 
     public function unlinkChild(School $school, User $parent, User $student)
     {
+        $this->authorize('updateParent', $parent);
+        $this->authorize('viewStudent', $student);
+
+        if (! $parent->children()->where('users.id', $student->id)->exists()
+            && ! $parent->children()->where('student_id', $student->id)->exists()) {
+            abort(403, 'This student is not linked to this parent.');
+        }
+
         $parent->children()->detach($student->id);
 
         return back()->with('success', "{$student->name} has been unlinked from this parent.");

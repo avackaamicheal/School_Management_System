@@ -9,7 +9,7 @@ class Payment extends Model
 {
     use Multitenantable;
 
-    protected $fillable = ['invoice_id', 'amount', 'method', 'reference', 'payment_date'];
+    protected $fillable = ['invoice_id', 'amount', 'method', 'reference', 'payment_proof', 'payment_date'];
 
     public function invoice()
     {
