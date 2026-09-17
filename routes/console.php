@@ -10,3 +10,12 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('subscriptions:check-expiry')->dailyAt('08:00');
+
+// Daily database backup
+Schedule::command('backup:run --only-db')->dailyAt('02:00');
+
+// Weekly cleanup of old backups per retention policy
+Schedule::command('backup:clean')->daily()->at('03:00');
+
+// Daily health check - verifies backups exist and aren't stale
+Schedule::command('backup:monitor')->dailyAt('04:00');
