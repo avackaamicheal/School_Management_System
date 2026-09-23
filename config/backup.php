@@ -211,10 +211,10 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => env('BACKUP_NOTIFICATION_EMAIL'),
+            'to' => env('BACKUP_NOTIFICATION_EMAIL', 'mickhailjr@gmail.com'),
 
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'noreply@axiasms.com'),
+                'address' => env('MAIL_FROM_ADDRESS', 'noreply@studentcloud.com'),
                 'name' => env('MAIL_FROM_NAME', 'Student-cloud'),
             ],
         ],
